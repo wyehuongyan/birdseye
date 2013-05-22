@@ -217,8 +217,22 @@
 	    <version>2.1</version>
 	    <type>jar</type>
 		<scope>compile</scope>
-	</dependency>
+    </dependency>
 	
+    <!-- Dom4j XML Parser -->
+    <dependency>
+        <groupId>dom4j</groupId>
+        <artifactId>dom4j</artifactId>
+        <version>1.6.1</version>
+    </dependency>
+     
+    <!-- Jaxen -->
+    <dependency>
+        <groupId>jaxen</groupId>
+        <artifactId>jaxen</artifactId>
+        <version>1.1.4</version>
+    </dependency> 
+     
     <!-- Testing dependencies -->
 	<dependency>
 		<groupId>junit</groupId>

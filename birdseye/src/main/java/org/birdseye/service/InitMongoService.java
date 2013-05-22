@@ -9,6 +9,7 @@ import java.util.UUID;
 import org.birdseye.domain.Gps;
 import org.birdseye.domain.Role;
 import org.birdseye.domain.User;
+import org.birdseye.stream.TrafficInfoStream;
 import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
@@ -74,6 +75,8 @@ public class InitMongoService {
         } else {
             System.out.println("GPS data already loaded.");
         }
+
+        TrafficInfoStream.getInstance().retrieveIncidentData();
     }
 
     private ArrayList<String> searchForFile(final String filename) {
