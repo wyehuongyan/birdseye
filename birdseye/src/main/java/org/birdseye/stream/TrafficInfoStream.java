@@ -77,7 +77,8 @@ public final class TrafficInfoStream {
         System.out.println("timeOccurred: " + timeOccurred);
 
         // put into Incident
-        final Incident incident = new Incident(incidentId);
+        // final Incident incident = new Incident(incidentId); // something wrong with incidentId initialisation of ObjectId
+        final Incident incident = new Incident(); // use default constructor for now
 
         incident.setId(String.format("%s_%s_%s_%s", dateOccurred, timeOccurred, latitude, longtitude)); // custom id
         incident.setMessage(message);
