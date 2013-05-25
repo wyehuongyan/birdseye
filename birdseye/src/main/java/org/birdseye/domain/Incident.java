@@ -10,7 +10,7 @@ public class Incident extends TrafficEvent {
     private String longtitude;
     private String distance;
 
-    private final HashMap<String, String> incidentMap = new HashMap<String, String>();
+    private final HashMap<String, String[]> incidentMap = new HashMap<String, String[]>();
 
     public Incident() {
         super();
@@ -51,7 +51,7 @@ public class Incident extends TrafficEvent {
         // super.setId(customId);
     }
 
-    public HashMap<String, String> getIncidentMap() {
+    public HashMap<String, String[]> getIncidentMap() {
         return incidentMap;
     }
 
