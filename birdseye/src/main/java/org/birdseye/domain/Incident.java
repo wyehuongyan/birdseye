@@ -7,7 +7,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 public class Incident extends TrafficEvent {
 
     private String latitude;
-    private String longtitude;
+    private String longitude;
     private String distance;
 
     private final HashMap<String, String[]> incidentMap = new HashMap<String, String[]>();
@@ -28,12 +28,12 @@ public class Incident extends TrafficEvent {
         this.latitude = latitude;
     }
 
-    public String getLongtitude() {
-        return longtitude;
+    public String getLongitude() {
+        return longitude;
     }
 
-    public void setLongtitude(final String longtitude) {
-        this.longtitude = longtitude;
+    public void setLongitude(final String longitude) {
+        this.longitude = longitude;
     }
 
     public String getDistance() {

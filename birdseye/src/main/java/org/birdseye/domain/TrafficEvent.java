@@ -1,30 +1,30 @@
 package org.birdseye.domain;
 
-import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
 
 public abstract class TrafficEvent {
 
-    protected ObjectId eventId; // this is not the id
+    protected String eventId; // this is not the id
 
     @Id
     private String id;
 
     private String type;
     private String message;
+    private String startTimestamp;
+    private String endTimestamp;
     private String createDate;
     private String summary;
     private String dateOccurred;
     private String timeOccurred;
     private String timeElapsed;
-    private boolean resolved = false;
 
     public TrafficEvent() {
         // default constructor
     }
 
     public TrafficEvent(final String eventId) {
-        this.eventId = new ObjectId(eventId);
+        this.eventId = eventId;
     }
 
     public String getId() {
@@ -91,12 +91,20 @@ public abstract class TrafficEvent {
         this.timeElapsed = timeElapsed;
     }
 
-    public boolean isResolved() {
-        return resolved;
+    public String getStartTimestamp() {
+        return startTimestamp;
     }
 
-    public void setResolved(final boolean resolved) {
-        this.resolved = resolved;
+    public void setStartTimestamp(final String startTimestamp) {
+        this.startTimestamp = startTimestamp;
+    }
+
+    public String getEndTimestamp() {
+        return endTimestamp;
+    }
+
+    public void setEndTimestamp(final String endTimestamp) {
+        this.endTimestamp = endTimestamp;
     }
 
 }

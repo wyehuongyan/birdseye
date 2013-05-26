@@ -27,11 +27,16 @@ public class InitMongoService {
     @Autowired
     private MongoTemplate mongoTemplate;
 
+    @Autowired
+    private TrafficInfoStream trafficInfoStream;
+
     public void init() {
         // Drop existing collections
         mongoTemplate.dropCollection("role");
         mongoTemplate.dropCollection("user");
         // mongoTemplate.dropCollection("gps");
+        // mongoTemplate.dropCollection("incident");
+        // mongoTemplate.dropCollection("ongoing");
 
         // Create new records
         final Role adminRole = new Role();
@@ -69,14 +74,11 @@ public class InitMongoService {
             try {
                 readWithCsvListReader();
             } catch (final Exception e) {
-                // TODO Auto-generated catch block
                 e.printStackTrace();
             }
         } else {
             System.out.println("GPS data already loaded.");
         }
-
-        TrafficInfoStream.getInstance().retrieveIncidentData();
     }
 
     private ArrayList<String> searchForFile(final String filename) {
