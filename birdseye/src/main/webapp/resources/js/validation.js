@@ -1,6 +1,7 @@
 function setupFormValidation() {
     // form validation rules
-    $("#parameterform").validate({
+    $("#analyticsform").validate({
+        ignore : "",
         showErrors : function(errorMap, errorList) {
             $(".errormsg").html($.map(errorList, function(el) {
                 return el.message;

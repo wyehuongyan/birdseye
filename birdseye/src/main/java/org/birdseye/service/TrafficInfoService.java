@@ -52,6 +52,7 @@ public class TrafficInfoService {
         }
 
         ((TrafficEvent)existingT).setCreateDate(trafficEvent.getCreateDate());
+        ((TrafficEvent)existingT).setEndTimestamp(trafficEvent.getEndTimestamp());
         ((TrafficEvent)existingT).setTimeElapsed(trafficEvent.getTimeElapsed());
 
         if (!((TrafficEvent)existingT).getMessage().equals(trafficEvent.getMessage())) {
@@ -80,6 +81,7 @@ public class TrafficInfoService {
         }
 
         existingIncident.setCreateDate(incident.getCreateDate());
+        existingIncident.setEndTimestamp(incident.getEndTimestamp());
         existingIncident.setTimeElapsed(incident.getTimeElapsed());
 
         if (!existingIncident.getMessage().equals(incident.getMessage())) {
