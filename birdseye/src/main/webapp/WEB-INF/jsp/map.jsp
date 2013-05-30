@@ -18,7 +18,7 @@
     <script type='text/javascript' src='<c:url value="/resources/js/jquery-ui-1.10.0.custom.js"/>'></script>
     <script type='text/javascript' src='<c:url value="/resources/js/jquery-ui-timepicker-addon.js"/>'></script>
 	<script type='text/javascript' src='<c:url value="/resources/js/bootstrap.js"/>'></script>
-	<script type="text/javascript" src='<c:url value="https://maps.googleapis.com/maps/api/js?sensor=false"/>'></script>
+	<script type="text/javascript" src='<c:url value="https://maps.googleapis.com/maps/api/js?key=AIzaSyDn1xjmKkgF7KL8Y6txLXmsrJIc7nzTDSo&sensor=false"/>'></script>
     <script type="text/javascript" src="<c:url value="/resources/js/jquery.tmpl.js"/>"></script>
     <script type="text/javascript" src="<c:url value="/resources/js/jquery.validate.js"/>"></script>
     <script type="text/javascript" src="<c:url value="/resources/js/validation.js"/>"></script>
@@ -71,7 +71,9 @@
     <script type="text/javascript">
     var urlHolder = new Object();
     var map;
+    var geocoder;
     var markerArray = new Array();
+    var incidentArray = new Array();
     
     function initializeUI() {
     	// jquery ui elements	    
@@ -133,6 +135,8 @@
 		
 		map = new google.maps.Map(document.getElementById("map_canvas"),
 				mapOptions);
+		
+		geocoder = new google.maps.Geocoder();
 	}
 	
 	function setLoadingBar(progress, msg) {
@@ -141,6 +145,27 @@
 		}
 		
 		$("#loadmsg").html(msg);
+	}
+	
+	function filterIncidents() {
+	    // called when checkbox onchange events occur
+	    $("input[name=incidentType]").each(function() {
+	        for(var i=0; i < incidentArray.length; i++){
+	            if(this.value != "Others") {
+    	            if(incidentArray[i].data.type == this.value) {
+    	                incidentArray[i].marker.setVisible(this.checked);
+    	            }
+	            }
+	            else {
+	                if(incidentArray[i].data.type != "Accident" &&
+	                   incidentArray[i].data.type != "Road Work" &&
+	                   incidentArray[i].data.type != "Vehicle Breakdown" &&
+	                   incidentArray[i].data.type != "Heavy Traffic") {
+	                    incidentArray[i].marker.setVisible(this.checked);
+	                }
+	            }
+	        }
+	    });
 	}
 	
   	function retrieveOngoingIncidents() {
@@ -214,30 +239,51 @@
 	function parseIncidents(data) {
 	    // clear markers first
         map.clearMarkers();
+	    map.clearIncidents();
 	    
-	    var pinColor = "FE7569";
-        
-        var pinImage = new google.maps.MarkerImage("http://chart.apis.google.com/chart?chst=d_map_pin_letter&chld=%E2%80%A2|" + pinColor,
-            new google.maps.Size(21, 34),
-            new google.maps.Point(0,0),
-            new google.maps.Point(10, 34));
-        
-        var pinShadow = new google.maps.MarkerImage("http://chart.apis.google.com/chart?chst=d_map_pin_shadow",
-            new google.maps.Size(40, 37),
-            new google.maps.Point(0, 0),
-            new google.maps.Point(12, 35));
+	    var icons = {
+	            "Accident" : {
+	                icon: "./resources/icons/accident.png"
+	            },
+	            "Road Work" : {
+	                icon: "./resources/icons/road_work.png"
+	            },
+	            "Vehicle Breakdown" : {
+	                icon: "./resources/icons/vehicle_breakdown.png"
+	            },
+	            "Heavy Traffic" : {
+	                icon: "./resources/icons/heavy_traffic.png"
+	            },
+	            "Unattended Vehicle" : {
+	                icon: "./resources/icons/others.png"
+	            }
+	    };
         
         $.each(data, function(key, val) {
             // console.log("id: " +val.id+ "\nlongitude: " +val.longitude+ "\nlatitude: " +val.latitude);
-            marker = new google.maps.Marker({
+            var incident = new Object();
+            incident.data = val;
+            
+            // google maps marker stuff //
+            var marker = new google.maps.Marker({
                 position: new google.maps.LatLng(val.latitude, val.longitude),
+                icon: icons[val.type].icon,
                 map: map
             });
             
+            google.maps.event.addListener(marker, 'click', function() {
+                map.setZoom(15);
+                map.setCenter(marker.getPosition());
+              });
+            // end of google maps marker stuff //
+            
+            incident.marker = marker;
+            
+            incidentArray.push(incident);
             markerArray.push(marker);
         });
         
-        console.log("Coordinates Parsed.");
+        // console.log("Coordinates Parsed.");
 	}
 	
 	function parseGps(data) {
@@ -260,7 +306,7 @@
 		
 		$.each(data, function(key, val) {
 			// console.log("id: " +val.id+ "\nlongtitude: " +val.longtitude+ "\nlatitude: " +val.latitude);
-			marker = new google.maps.Marker({
+			var marker = new google.maps.Marker({
 	            position: new google.maps.LatLng(val.latitude, val.longtitude),
 	            map: map
 	        });
@@ -288,13 +334,56 @@
 	    markerArray = new Array();
 	};
 	
-	function toggle(source) {
+	google.maps.Map.prototype.clearIncidents = function() {
+	    for(var i=0; i < incidentArray.length; i++){
+	        incidentArray[i].marker.setMap(null);
+        }
+	    
+	    incidentArray = new Array();
+	}
+	
+	function toggleAll(source) {
 	    checkboxes = document.getElementsByName("incidentType");
 	    
 	    for(var i=0, n=checkboxes.length;i<n;i++) {
 	      checkboxes[i].checked = source.checked;
 	    }
+	    
+	    filterIncidents();
 	  }
+	
+	// callback function for datasource connection for jquery autocomplete function
+	function dataSourceConnector(request, response) {
+        if (geocoder == null) {
+            geocoder = new google.maps.Geocoder();
+            }
+     
+        geocoder.geocode( {'address': request.term }, function(results, status) {
+            if (status == google.maps.GeocoderStatus.OK) {
+                var searchLoc = results[0].geometry.location;
+                var lat = results[0].geometry.location.lat();
+                var lng = results[0].geometry.location.lng();
+                
+                var latlng = new google.maps.LatLng(lat, lng);
+                var bounds = results[0].geometry.bounds;
+
+                geocoder.geocode({'latLng': latlng}, function(results1, status1) {
+                    if (status1 == google.maps.GeocoderStatus.OK) {
+                        if (results1[1]) {
+                            response($.map(results1, function(loc) {
+                                return {
+                                    location : loc.geometry.location,
+                                    label  : loc.formatted_address,
+                                    value  : loc.formatted_address,
+                                    bounds   : loc.geometry.bounds
+                                    }
+                                }));
+                            }
+                        }
+                    });
+                }
+            });
+        }
 	
 	$(document).ready(function() {
 		urlHolder.gps = '${getGpsUrl}';
@@ -304,6 +393,36 @@
 		initializeMap();
 		initializeUI();
 		setupFormValidation();
+		
+		// initialise autocomplete geocoding for starting location textfield
+		$("#fromdirection").autocomplete({
+            source: dataSourceConnector,
+               
+            // triggered when an item is selected from the menu
+            select: function(event,ui){
+                var pos = ui.item.location;
+                var bounds = ui.item.bounds;
+                
+                console.log(ui.item);
+                console.log("start lat: " +pos.jb+ "start long: " +pos.kb);
+            }
+        });  
+		
+		// initialise autocomplete geocoding for destination textfield
+        $("#todirection").autocomplete({
+            source: dataSourceConnector,
+               
+            // triggered when an item is selected from the menu
+            select: function(event,ui){
+                var pos = ui.item.location;
+                var bounds = ui.item.bounds;
+                
+                console.log(ui.item);
+                console.log("end lat: " +pos.jb+ "end long: " +pos.kb);    
+            }
+        });  
+		
+		//
 		
 		$('#loadModal').modal({
 			keyboard: false,
@@ -407,22 +526,22 @@
                           <div class="accordion-inner">
                             
                             <label class="checkbox">
-                              <input type="checkbox" checked id="selectAllIncidentType" onClick="toggle(this)" /> All
+                              <input type="checkbox" checked id="selectAllIncidentType" onClick="toggleAll(this)"/> All
                             </label>
                             <label class="checkbox">
-                              <input type="checkbox" checked name="incidentType" id="incidentTypeCheckbox1" value="option1"> Accidents
+                              <input type="checkbox" checked name="incidentType" id="incidentTypeCheckbox1" value="Accident" onchange="filterIncidents()"> Accidents
                             </label>
                             <label class="checkbox">
-                              <input type="checkbox" checked name="incidentType" id="incidentTypeCheckbox2" value="option2"> Roadworks
+                              <input type="checkbox" checked name="incidentType" id="incidentTypeCheckbox2" value="Road Work" onchange="filterIncidents()"> Road Works
                             </label>
                             <label class="checkbox">
-                              <input type="checkbox" checked name="incidentType" id="incidentTypeCheckbox3" value="option3"> Vehicle Breakdowns
+                              <input type="checkbox" checked name="incidentType" id="incidentTypeCheckbox3" value="Vehicle Breakdown" onchange="filterIncidents()"> Vehicle Breakdowns
                             </label>
                             <label class="checkbox">
-                              <input type="checkbox" checked name="incidentType" id="incidentTypeCheckbox3" value="option4"> Heavy Traffic
+                              <input type="checkbox" checked name="incidentType" id="incidentTypeCheckbox3" value="Heavy Traffic" onchange="filterIncidents()"> Heavy Traffic
                             </label>
                             <label class="checkbox">
-                              <input type="checkbox" checked name="incidentType" id="incidentTypeCheckbox3" value="option5"> Others
+                              <input type="checkbox" checked name="incidentType" id="incidentTypeCheckbox3" value="Others" onchange="filterIncidents()"> Others
                             </label>
                             
                             <hr>

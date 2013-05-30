@@ -110,11 +110,17 @@ public final class TrafficInfoStream {
         final String dateUpdatedValues[] = dateUpdated.split("-");
         final String timeUpdatedValues[] = timeUpdated.split(":");
 
+        Integer hourOfDay = Integer.parseInt(timeUpdatedValues[0]) + 8;
+
+        if (hourOfDay >= 24) {
+            hourOfDay = 0;
+        }
+
         // Joda Time: year, month, day, hour, min, secs
         // hour + 8 because Singapore is GMT +8
         final DateTime dateTimeUpdated = new DateTime(Integer.parseInt(dateUpdatedValues[0]), Integer.parseInt(dateUpdatedValues[1]),
-                Integer.parseInt(dateUpdatedValues[2]), Integer.parseInt(timeUpdatedValues[0]) + 8, Integer.parseInt(timeUpdatedValues[1]),
-                Integer.parseInt(timeUpdatedValues[2].substring(0, 2)));
+                Integer.parseInt(dateUpdatedValues[2]), hourOfDay, Integer.parseInt(timeUpdatedValues[1]), Integer.parseInt(timeUpdatedValues[2]
+                        .substring(0, 2)));
 
         // calculate duration between datetime occurred and updated
         final Duration timeElapsed = new Duration(dateTimeOccurred, dateTimeUpdated);
