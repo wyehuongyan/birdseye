@@ -36,7 +36,6 @@
       .frame {
         overflow: hidden;
         padding-top: 60px;
-        padding-bottom: 40px;
       }
       .sidebar-nav {
         padding: 9px 0;
@@ -92,6 +91,7 @@
     var urlHolder = new Object();
     
     var map, map2;
+    var trafficLayer;
     var geocoder;
     var fromautocomplete, toautocomplete;
     var fromlatlng, tolatlng;
@@ -101,6 +101,7 @@
     
     var markerArray = new Array();
     var incidentArray = new Array();
+    var latlngArray;
     
     function initializeMap() {
         var mapOptions = {
@@ -112,16 +113,45 @@
         map = new google.maps.Map(document.getElementById("map_canvas"),
                 mapOptions); 
         
+        // custom heatmap
+        var MY_MAPTYPE_ID = "custom_heatmap";
+        
+        var featureOpts = [
+            {
+                 "stylers": [
+                     { "saturation": -100 },
+                     { "gamma": 1.2 },
+                     { "lightness": 15 }
+                 ]
+            }
+        ];
+        
         var mapOptions2 = {
                 center : new google.maps.LatLng(1.352083, 103.819836),
                 zoom : 12,
-                mapTypeId : google.maps.MapTypeId.SATELLITE
+                mapTypeId : MY_MAPTYPE_ID,
+                mapTypeControlOptions: {
+                    mapTypeIds: [google.maps.MapTypeId.ROADMAP, MY_MAPTYPE_ID]
+                },
             };
         
         map2 = new google.maps.Map(document.getElementById("map_canvas2"),
                 mapOptions2); 
         
+        var styledMapOptions = {
+                name: 'Heatmap'
+        };
+
+        var customMapType = new google.maps.StyledMapType(featureOpts, styledMapOptions);
+        
+        map2.mapTypes.set(MY_MAPTYPE_ID, customMapType);
+        
+        // other google apis initialization
         geocoder = new google.maps.Geocoder();
+        
+        trafficLayer = new google.maps.TrafficLayer();
+        trafficLayer.setMap(map);
+        
         directionsService = new google.maps.DirectionsService();
         directionsDisplay = new google.maps.DirectionsRenderer();
         
@@ -133,6 +163,7 @@
         var travelMode = document.getElementById("travelmodeDDL").value; 
         var avoidHighways = document.getElementById("avoidhighwaysCheckbox");
         var avoidTolls = document.getElementById("avoidtollsCheckbox");
+        var threshold = 2;
         
         var request = {
           origin: fromlatlng,
@@ -145,12 +176,99 @@
         
         // call to google direction service api
         directionsService.route(request, function(directionsResult, status) {
+            console.log(status);
+            
             if (status == google.maps.DirectionsStatus.OK) {
                 directionsDisplay.setDirections(directionsResult);
                 
+                // reset all incidents' near attribute to false everytime a new direction result is received
+                $.each(incidentArray, function(key, incident) {
+                    incident.near = false;
+                });
+                
+                // retrieve the route object and extract all the latlngs that makes up the path
+                var directionsRoutes = directionsResult.routes;
+                console.log(directionsRoutes);
+                
+                latlngArray = directionsRoutes[0].overview_path;
+                
+                // latlngArray will be used to check distance between incidents and path //
+                // to determine which are the 'relevant' incidents close to the path
+                $.each(latlngArray, function(key, latlng) {
+                    // check with each incident in incidentArray
+                    $.each(incidentArray, function(key, incident) {
+                        // sameple incident only if it has not been marked as near the path
+                        if(!incident.near) {
+                            // use haversine formula and see if returned result > custom threshold
+                            var distance = getDistanceFromLatLonInKm(latlng.lat(), latlng.lng(), incident.marker.getPosition().lat(), incident.marker.getPosition().lng())
+  
+                            // console.log("distance: " +distance);
+                            
+                            if(distance <= threshold) {
+                                // if distance within threshold of planned path
+                                // incident.marker.setVisible(true); // show the marker
+                                
+                                // do not sample the marker again
+                                incident.near = true;
+                            }
+                            else {
+                                // hide the marker
+                                // incident.marker.setVisible(false);
+                            }
+                        }
+                    });
+                });
+                
+                // console.log(latlngArray);
+                
                 // expand the accordion to show directionResults
-                $('#collapseDirection').collapse('toggle');
-            }  
+                $('#collapseIncident').collapse('hide');
+                $('#collapseDirection').collapse('show');
+                
+                $('#relevantCheckBox').prop('disabled', false); // allow the checkbox to be checked
+            }  else if(status == google.maps.DirectionsStatus.ZERO_RESULTS) {
+                alert("There are no routes");
+            }
+        });
+    }
+    
+    // Haversine formula: calculates great-circle distances between the two points
+    function getDistanceFromLatLonInKm(lat1,lon1,lat2,lon2) {
+        var R = 6371; // Radius of the earth in km
+        var dLat = deg2rad(lat2-lat1);  // deg2rad below
+        var dLon = deg2rad(lon2-lon1); 
+        
+        var a = 
+            Math.sin(dLat/2) * Math.sin(dLat/2) +
+            Math.cos(deg2rad(lat1)) * Math.cos(deg2rad(lat2)) * 
+            Math.sin(dLon/2) * Math.sin(dLon/2); 
+      
+        var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a)); 
+        var d = R * c; // Distance in km
+      
+        return d;
+    }
+    
+    function deg2rad(deg) {
+        return deg * (Math.PI/180)
+    }
+    
+    // end of haversine formula
+    
+    function showNearIncidents() {
+        $.each(incidentArray, function(key, incident){
+           if(incident.near) {
+               incident.marker.setVisible(true);
+           } 
+           else {
+               incident.marker.setVisible(false);
+           }
+        });
+    }
+    
+    function showAllIncidents() {
+        $.each(incidentArray, function(key, incident){
+            incident.marker.setVisible(true);
         });
     }
     
@@ -282,23 +400,42 @@
 	
 	function filterIncidents() {
 	    // called when checkbox onchange events occur
-	    $("input[name=incidentType]").each(function() {
-	        for(var i=0; i < incidentArray.length; i++){
-	            if(this.value != "Others") {
-    	            if(incidentArray[i].data.type == this.value) {
-    	                incidentArray[i].marker.setVisible(this.checked);
-    	            }
-	            }
-	            else {
-	                if(incidentArray[i].data.type != "Accident" &&
-	                   incidentArray[i].data.type != "Road Work" &&
-	                   incidentArray[i].data.type != "Vehicle Breakdown" &&
-	                   incidentArray[i].data.type != "Heavy Traffic") {
-	                    incidentArray[i].marker.setVisible(this.checked);
-	                }
-	            }
-	        }
-	    });
+        $("input[name=incidentType]").each(function() {
+            for(var i=0; i < incidentArray.length; i++){
+                if($("#relevantCheckBox").is(":checked"))
+                {
+                    if(incidentArray[i].near) {
+                        if(this.value != "Others") {
+                            if(incidentArray[i].data.type == this.value) {
+                                incidentArray[i].marker.setVisible(this.checked);
+                            }
+                        }
+                        else {
+                            if(incidentArray[i].data.type != "Accident" &&
+                               incidentArray[i].data.type != "Road Work" &&
+                               incidentArray[i].data.type != "Vehicle Breakdown" &&
+                               incidentArray[i].data.type != "Heavy Traffic") {
+                                incidentArray[i].marker.setVisible(this.checked);
+                            }
+                        }
+                    }
+                } else {
+                    if(this.value != "Others") {
+                        if(incidentArray[i].data.type == this.value) {
+                            incidentArray[i].marker.setVisible(this.checked);
+                        }
+                    }
+                    else {
+                        if(incidentArray[i].data.type != "Accident" &&
+                           incidentArray[i].data.type != "Road Work" &&
+                           incidentArray[i].data.type != "Vehicle Breakdown" &&
+                           incidentArray[i].data.type != "Heavy Traffic") {
+                            incidentArray[i].marker.setVisible(this.checked);
+                        }
+                    }
+                }         
+            }
+        });
 	}
 	
   	function retrieveOngoingIncidents() {
@@ -404,16 +541,39 @@
             var marker = new google.maps.Marker({
                 position: new google.maps.LatLng(val.latitude, val.longitude),
                 icon: icons[val.type].icon,
-                map: map
+                map: map,
+                title: val.type
             });
             
+            var infowindow = new google.maps.InfoWindow({
+                content: val.message,
+                maxWidth: 200
+            });
+            
+            // marker click listener
             google.maps.event.addListener(marker, 'click', function() {
-                map.setZoom(15);
-                map.setCenter(marker.getPosition());
-              });
+                // map.setZoom(15);
+                // map.setCenter(marker.getPosition());
+                
+                // open corresponding info window
+                infowindow.open(map, marker);
+            });
+            
+            // marker visible changed listener
+            google.maps.event.addListener(marker, 'visible_changed', function() {                
+                // open corresponding info window
+                if(!marker.getVisible()) {
+                    infowindow.close();
+                }
+            });
             // end of google maps marker stuff //
             
+            // set markers to invisible at first
+            // marker.setVisible(false);
+            
             incident.marker = marker;
+            incident.infowindow = infowindow;
+            incident.near = false; // near attribute signifies that it is near the planned path
             
             incidentArray.push(incident);
             markerArray.push(marker);
@@ -426,18 +586,6 @@
 	function parseGps(data) {
 		// clear markers first
 		map.clearMarkers();
-		
-		var pinColor = "FE7569";
-	    
-		var pinImage = new google.maps.MarkerImage("http://chart.apis.google.com/chart?chst=d_map_pin_letter&chld=%E2%80%A2|" + pinColor,
-	        new google.maps.Size(21, 34),
-	        new google.maps.Point(0,0),
-	        new google.maps.Point(10, 34));
-	    
-		var pinShadow = new google.maps.MarkerImage("http://chart.apis.google.com/chart?chst=d_map_pin_shadow",
-	        new google.maps.Size(40, 37),
-	        new google.maps.Point(0, 0),
-	        new google.maps.Point(12, 35));
 		
 		setLoadingBar("80%", "Plotting...");
 		
@@ -499,20 +647,64 @@
 		initializeUI();
 		setupFormValidation();
 		
+		// retrieve the latest incidents
+		retrieveOngoingIncidents();
+		
 		$('#loadModal').modal({
 			keyboard: false,
 			backdrop: "static",
 			show: false
 		});
 		
+		$('#collapseDirection').collapse({
+		    toggle: false
+		});
+		  
+	    $('#collapseIncident').collapse({
+	        toggle: false
+        });
+		
 		$('#loadModal').on('hidden', function () {
 		});
 	
+		// event listener for checkbox
+		$("#relevantCheckBox").click(function() {
+            if($(this).is(":checked"))
+            {
+                showNearIncidents();
+            } else {
+                showAllIncidents();
+            }
+        });
+		
+		// event listeners for accordion
 		$('#collapseIncident').on('show', function () {
-		    // make a jquery call to server to plot all ongoing incidents
-		    retrieveOngoingIncidents();
+		    $('#collapseDirection').collapse('hide');
+		    
+		    // no. of accidents shown depends on relevantCheckBox value
+		    if($("#relevantCheckBox").is(":checked"))
+            {
+                showNearIncidents();
+            } else {
+                showAllIncidents();
+            }
 		});
 		
+		$('#collapseDirection').on('show', function () {
+            $('#collapseIncident').collapse('hide');
+        });
+		
+		// event listeners for tabs
+		$('a[data-toggle="tab"]').on('shown', function (e) {
+          var active = $($(e.target).attr('href')).attr('id');
+          
+          if(active == "analyticsTab") {
+              scrollToPos('.analyticsmap', -60, 200);
+          } else {
+              scrollToPos('.top', "0", 200);
+          }
+        });
+        
 		// prevent accidentally submission of form via enter keypress
 		$(window).keydown(function(event){
 		    if(event.keyCode == 13) {
@@ -521,8 +713,24 @@
 		    }
 		});
 		
+		// dom elements lose their width when they are affixed
+		// this function helps to ensure they do not mess up the UI
+		affixWidth();
+		
+		if (typeof latlngArray === "undefined") {
+		    console.log("latlngArray is undefined");
+		}
+		
+		// set directions accordion collapsed height
 		$('#directionsDiv').height(($(window).height())/3);
 	});
+	
+	function affixWidth() {
+	    // ensure the affix element maintains it width
+	    var affix = $('#panel');
+	    var width = affix.width();
+	    affix.width(width);
+	}
 	
 	function scrollToPos(pos, offset, delay) {  
 	    $('html, body').animate({
@@ -560,12 +768,10 @@
             <a class="brand" href="#">Bird's Eye</a>
             <div class="nav-collapse collapse">
               <p class="navbar-text pull-right">
-                Logged in as <a href="#" class="navbar-link">Username</a>
+                &copy <a href="mailto:whyan1@e.ntu.edu.sg" class="navbar-link">whyan1</a> 2013
               </p>
               <ul class="nav">
                 <!-- <li class="active"><a href="#">Home</a></li> -->
-                <li><a onclick="scrollToPos('.analyticsmap', 60, 200)">Analytics</a></li>
-                <li><a onclick="scrollToPos('.top', 0, 200);">Live</a></li>
               </ul>
             </div><!--/.nav-collapse -->
           </div>
@@ -575,15 +781,15 @@
       <div class="container-fluid">
         <div class="row-fluid">
           <div class="span3">
-          	<div id="panel">
+          	<div data-spy="affix" id="panel">
                   <!-- nav tabs -->
-                  <ul class="nav nav-tabs" id="myTab">
-                    <li class="active"><a href="#navigator" data-toggle="tab">Navigator</a></li>
-                    <li><a href="#analytics" data-toggle="tab">Analytics</a></li>
+                  <ul class=" nav nav-tabs" id="myTab">
+                    <li class="active"><a href="#navigatorTab" data-toggle="tab">Navigator</a></li>
+                    <li><a href="#analyticsTab" data-toggle="tab">Analytics</a></li>
                   </ul>
                    
                   <div class="tab-content">
-                    <div class="tab-pane active" id="navigator">
+                    <div class="tab-pane active" id="navigatorTab">
                       <form id="directionsform" class="form-horizontal">
                         <fieldset> 
                             <div class="control-group">
@@ -636,11 +842,13 @@
                         <div class="accordion-group">
                           <div class="accordion-heading">
                             <a class="accordion-toggle" data-toggle="collapse" data-parent="#incidentdirectionaccordion" href="#collapseIncident">
-                              Incidents
+                              Incidents 
                             </a>
                           </div>
                           <div id="collapseIncident" class="accordion-body collapse">
                             <div class="accordion-inner">
+                                
+                              <button class="btn btn-mini" style="float:right;" onclick="retrieveOngoingIncidents();"><i class="icon-refresh"></i>&nbsp;Refresh Incidents</button>
                               
                               <label class="checkbox">
                                 <input type="checkbox" checked id="selectAllIncidentType" onClick="toggleAll(this)"/> All
@@ -661,11 +869,6 @@
                                 <input type="checkbox" checked name="incidentType" id="othersCheckbox" value="Others" onchange="filterIncidents()"> Others
                               </label>
                               
-                              <hr>
-                              <label class="checkbox">
-                                <input type="checkbox" disabled id="relevantCheckBox"/> Show incidents relevant to planned route only
-                              </label>
-                              
                             </div>
                           </div>
                         </div>
@@ -675,32 +878,36 @@
                               Directions
                             </a>
                           </div>
-                          <div id="collapseDirection" class="accordion-body collapse">
+                          <div id="collapseDirection" class="accordion-body collapse in">
                             <div class="accordion-inner">
-                              <div id="directionsDiv" style="overflow: scroll;"></div>
+                              <div id="directionsDiv" style="overflow: scroll;">
+                                <label class="checkbox">
+                                  <input type="checkbox" disabled id="relevantCheckBox"/> Show incidents relevant to planned route only
+                                </label>
+                              </div>
                             </div>
                           </div>
                         </div>
                       </div>               
                     </div>
                     
-                    <div class="tab-pane" id="analytics">
+                    <div class="tab-pane" id="analyticsTab">
                     
-                      <form id="analyticsform" class="form-inline">
-                        <fieldset>  
-                            <span class="form-elem">
-                                <label>Start Date:</label>
+                      <form id="analyticsform" class="form-horizontal">
+                        <fieldset> 
+                            <div class="control-group">
+                              <label class="control-label" for="startdatetimepicker">Start Date:</label>
+                              <div class="controls">
                                 <input type="text" name="startdatetimepicker" id="startdatetimepicker" />
-                            </span>
-                            
-                            <br><br>
-                            
-                            <span class="form-elem">
-                                <label>End Date:</label>
+                              </div>
+                            </div>
+                                                        
+                            <div class="control-group">
+                              <label class="control-label" for="enddatetimepicker">End Date:</label>
+                              <div class="controls">
                                 <input type="text" name="enddatetimepicker" id="enddatetimepicker" />
-                            </span>
-                            
-                            <br><br>
+                              </div>
+                            </div>
                             
                             <div class="form-actions">  
                                 <input class="btn btn-primary" type="submit" value="Retrieve"></input>
@@ -722,8 +929,7 @@
   			    <div id="dummy"></div>        
   			    <div id="map_canvas"><h1>Map not loaded</h1></div>
                   
-                  <a class="analyticsmap"></a>
-                  <div id="map_canvas2"><h1>Map2 not loaded</h1></div>
+                <div class="analyticsmap" id="map_canvas2"><h1>Map2 not loaded</h1></div>
                   
               </div>
           </div><!--/span-->
@@ -742,7 +948,9 @@
               </div>
           </div>
   
-        
+        <footer>
+        <br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>
+        </footer>
   
       </div><!--/.fluid-container-->
     </div>
