@@ -38,7 +38,7 @@ public final class TrafficInfoStream {
 
     // keyword library, keyword and position, -1 implies doesn't exist
     private final String keywords[][] = { { "at", "-1" }, { "on", "-1" }, { "in", "-1" }, { "towards", "-1" }, { "after", "-1" }, { "before", "-1" },
-            { "near", "-1" }, { "between", "-1" }, { "with congestion till", "-1" }, { "avoid", "-1" } };
+            { "near", "-1" }, { "between", "-1" }, { "congestion", "-1" }, { "avoid", "-1" } };
 
     private final Timer timer = new Timer();
 
