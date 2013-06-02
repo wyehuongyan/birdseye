@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 @Controller
@@ -40,4 +41,21 @@ public class TrafficInfoController {
         return ongoingIncidents;
     }
 
+    @RequestMapping(value = "/incidents/between", method = RequestMethod.POST)
+    public @ResponseBody
+    List<Incident> readByTimestampBetween(@RequestParam final String startTimestamp, @RequestParam final String endTimestamp) {
+        System.out.println("startTimestamp: " + startTimestamp);
+        System.out.println("endTimestamp: " + endTimestamp);
+
+        final List<Incident> betweenIncidents = trafficInfoService.readByTimestampBetween(startTimestamp, endTimestamp);
+
+        // incidentMap is a hashMap with values
+        // jackson is unable to process it and causes a internal server error 500
+        for (final Incident i : betweenIncidents) {
+            // clear the hashmap to temporary solve the problem
+            i.getIncidentMap().clear();
+        }
+
+        return betweenIncidents;
+    }
 }

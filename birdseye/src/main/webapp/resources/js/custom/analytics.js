@@ -1,11 +1,15 @@
+var incidentData, heatMapData, permaHeatMapData;
+
 function initializeUI() {
+    // hard code data limits from 27th May 2013 till current day
+
     // jquery ui elements
     var startDateTextBox = $('#startdatetimepicker');
     var endDateTextBox = $('#enddatetimepicker');
 
     startDateTextBox.datetimepicker({
-        minDate : new Date(2009, 9, 1, 0, 0),
-        maxDate : new Date(2010, 4, 31, 0, 0),
+        minDate : new Date(2013, 4, 27, 0, 0),
+        maxDate : new Date(),
         dateFormat : "D MM d yy",
         separator : ' @ ',
         defaultDate : new Date(startDateTextBox.datepicker("option", "minDate")),
@@ -27,8 +31,8 @@ function initializeUI() {
         }
     });
     endDateTextBox.datetimepicker({
-        minDate : new Date(2009, 9, 1, 0, 0),
-        maxDate : new Date(2010, 4, 31, 0, 0),
+        minDate : new Date(2013, 4, 27, 0, 0),
+        maxDate : new Date(),
         dateFormat : "D MM d yy",
         separator : ' @ ',
         onClose : function(dateText, inst) {
@@ -49,92 +53,93 @@ function initializeUI() {
     });
 }
 
-function setLoadingBar(progress, msg) {
-    if (progress != null && progress != "") {
-        $("#loadprogress").width(progress);
-    }
+function initializeHeatMap() {
+    heatmap.setData(heatMapData);
+    heatmap.setOptions({
+        radius : 23,
+        opacity : 0.6,
+    });
 
-    $("#loadmsg").html(msg);
+    heatmap.setMap(map2);
+
+    // set pan and slider to be visible
+    $("#panLabel").html(new Date($('#startdatetimepicker').datetimepicker('getDate').getTime()));
+
+    $("#incidentSlider").slider({
+        range : "min",
+        min : $('#startdatetimepicker').datetimepicker('getDate').getTime(),
+        max : $('#enddatetimepicker').datetimepicker('getDate').getTime(),
+        value : $('#startdatetimepicker').datetimepicker('getDate').getTime(),
+        slide : function(event, ui) {
+            var date = new Date(ui.value);
+
+            /*
+             * $('.ui-slider-handle').html( '<div data-toggle="tooltip"
+             * class="tooltip fade top slider-tip"><div class="tooltip-arrow"></div><div
+             * class="tooltip-inner">' + date + '</div></div>');
+             */
+
+            // every time slider is slide, calculate current value //
+            // and push the filtered latlng into pointArray //
+            heatMapData = new Array();
+            heatMapData.push.apply(heatMapData, permaHeatMapData);
+
+            var last = 0; // this variable keeps the last occurence of key
+            // that
+            // satisfy the if condition
+
+            $.each(incidentData, function(key, heatObj) {
+                if (parseInt(heatObj.startTimestamp) <= parseInt(ui.value)) {
+                    last = key;
+                }
+            });
+
+            var newHeatMapData = heatMapData.slice(0, last);
+
+            heatmap.setData(newHeatMapData); // super
+
+            $("#panLabel").html(date);
+        }
+    });
+
+    $("#analyticsCheckBoxDiv").css("display", "block");
 }
 
-function retrieveGpsPeriod() {
-    $("#loadModal").modal('show');
-
-    setLoadingBar("10%", "Querying DB...");
-
-    $.post(urlHolder.gpsperiod, {
-        startTimestamp : $('#startdatetimepicker').datetimepicker('getDate').getTime() / 1000,
-        endTimestamp : $('#enddatetimepicker').datetimepicker('getDate').getTime() / 1000,
-        userid : "002"
+function retrieveBetweenIncidents() {
+    $.post(urlHolder.betweenIncidents, {
+        startTimestamp : $('#startdatetimepicker').datetimepicker('getDate').getTime(),
+        endTimestamp : $('#enddatetimepicker').datetimepicker('getDate').getTime()
     }, function(response) {
         if (response != null) {
-            setLoadingBar("30%", "Parsing Data...");
-            // alert("Success!\n" +response);
-
-            setTimeout(function() {
-                parseGps(response);
-            }, 2000);
+            // console.log(response);
+            parseHeatMapIncidents(response);
 
         } else {
             alert('Failure! An error has occurred retrieving Gps period!');
-
-            setLoadingBar(null, "Error in AJAX Request");
-            $("#loadModal").modal('hide');
         }
     });
 }
 
-function retrieveGps() {
-    requestData = {
-        'userid' : '002'
-    };
-    $.ajax({
-        url : urlHolder.gps,
-        data : JSON.stringify(requestData),
-        type : 'POST',
-        contentType : "application/json; charset=utf-8",
-        dataType : 'json',
+function parseHeatMapIncidents(data) {
+    // clear incidentData array first
+    incidentData = new Array();
+    heatMapData = new Array();
 
-        success : function(response, textStatus, jqXHR) {
-            // pass the response to callback function
-            parseGps(response);
-        },
+    permaHeatMapData = new Array();
 
-        error : function(jqXHR, textStatus, errorThrown) {
-            alert("Error " + "\njqXHR: " + jqXHR + "\ntextStatus: " + textStatus + "\nerrorThrown: " + errorThrown);
-        },
+    // create a google latlng object for each incident
+    // and push it into the incidentData array
+    $.each(data, function(key, incident) {
+        var heatObj = new Object();
+        var latlng = new google.maps.LatLng(incident.latitude, incident.longitude);
 
-        complete : function(jqXHR, textStatus) {
+        heatObj.latlng = latlng;
+        heatObj.startTimestamp = incident.startTimestamp;
 
-        }
-    });
-}
-
-function parseGps(data) {
-    // clear markers first
-    map.clearMarkers();
-
-    setLoadingBar("80%", "Plotting...");
-
-    $.each(data, function(key, val) {
-        // console.log("id: " +val.id+ "\nlongtitude: " +val.longtitude+
-        // "\nlatitude: " +val.latitude);
-        var marker = new google.maps.Marker({
-            position : new google.maps.LatLng(val.latitude, val.longtitude),
-            map : map
-        });
-
-        markerArray.push(marker);
+        incidentData.push(heatObj);
+        heatMapData.push(latlng);
+        permaHeatMapData.push(latlng);
     });
 
-    console.log("Coordinates Parsed.");
-
-    setTimeout(function() {
-        setLoadingBar("100%", "Done");
-
-        setTimeout(function() {
-            $("#loadModal").modal('hide');
-        }, 1000);
-
-    }, 2000);
+    initializeHeatMap();
 }

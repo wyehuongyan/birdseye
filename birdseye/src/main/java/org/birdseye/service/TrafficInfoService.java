@@ -44,6 +44,11 @@ public class TrafficInfoService {
         return incidentRepository.findById(incident.getId());
     }
 
+    // repository read by timestamp between
+    public List<Incident> readByTimestampBetween(final String from, final String to) {
+        return incidentRepository.findByStartTimestampBetween(from, to);
+    }
+
     public <T> boolean update(final TrafficEvent trafficEvent, final String collectionName, final Class<T> entityClass) {
         final T existingT = this.read(trafficEvent, collectionName, entityClass);
 

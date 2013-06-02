@@ -78,8 +78,8 @@ function calcRoute() {
             $('#collapseDirection').collapse('show');
 
             $('#relevantCheckBox').prop('disabled', false); // allow the
-                                                            // checkbox to be
-                                                            // checked
+            // checkbox to be
+            // checked
         } else if (status == google.maps.DirectionsStatus.ZERO_RESULTS) {
             alert("There are no routes");
         }
@@ -314,12 +314,12 @@ function parseIncidents(data) {
         incident.marker = marker;
         incident.infowindow = infowindow;
         incident.near = false; // near attribute signifies that it is near the
-                                // planned path
+        // planned path
 
         incidentArray.push(incident);
         markerArray.push(marker);
     });
 
     // console.log("Coordinates Parsed.");
-    console.log("no. of markers: " + incidentArray.length);
+    // console.log("no. of markers: " + incidentArray.length);
 }

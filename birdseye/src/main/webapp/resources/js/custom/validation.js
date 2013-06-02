@@ -18,7 +18,7 @@ function setupFormValidation() {
         },
         submitHandler : function(form) {
             // form.submit();
-            retrieveGpsPeriod();
+            retrieveBetweenIncidents();
         }
     });
 }

@@ -1,8 +1,7 @@
 <%@ taglib uri='http://java.sun.com/jsp/jstl/core' prefix='c' %>
 
-<c:url value="/gps/get" var="getGpsUrl"/>
-<c:url value="/gps/get/period" var="getGpsPeriodUrl"/>
 <c:url value="/traffic/incidents/ongoing" var="ongoingIncidentsUrl"/>
+<c:url value="/traffic/incidents/between" var="betweenIncidentsUrl"/>
 
 <!DOCTYPE html>
 <html lang="en">
@@ -18,7 +17,7 @@
     <script type='text/javascript' src='<c:url value="/resources/js/jquery/jquery-ui-1.10.0.custom.js"/>'></script>
     <script type='text/javascript' src='<c:url value="/resources/js/jquery/jquery-ui-timepicker-addon.js"/>'></script>
 	<script type='text/javascript' src='<c:url value="/resources/js/bootstrap/bootstrap.js"/>'></script>
-	<script type="text/javascript" src='<c:url value="https://maps.googleapis.com/maps/api/js?key=AIzaSyDn1xjmKkgF7KL8Y6txLXmsrJIc7nzTDSo&libraries=places&sensor=false"/>'></script>
+	<script type="text/javascript" src='<c:url value="https://maps.googleapis.com/maps/api/js?key=AIzaSyDn1xjmKkgF7KL8Y6txLXmsrJIc7nzTDSo&libraries=places,visualization&sensor=false"/>'></script>
     <script type="text/javascript" src="<c:url value="/resources/js/jquery/jquery.tmpl.js"/>"></script>
     <script type="text/javascript" src="<c:url value="/resources/js/jquery/jquery.validate.js"/>"></script>
     <script type="text/javascript" src="<c:url value="/resources/js/custom/validation.js"/>"></script>
@@ -32,60 +31,8 @@
     <link rel='stylesheet' type='text/css' media='screen' href='<c:url value="/resources/css/jquery-ui-1.10.0.custom.css"/>'/>
     <link rel='stylesheet' type='text/css' media='screen' href='<c:url value="/resources/css/jquery-ui-timepicker-addon.css"/>'/>
     
-    <style type="text/css">
-      body {
-        overflow: hidden;
-      }
-    
-      .frame {
-        overflow: hidden;
-        padding-top: 60px;
-      }
-      .sidebar-nav {
-        padding: 9px 0;
-      }
-      
-      .form-elem {
-        float: right;
-      }
-      
-      .container {
-    	display: inline-block;
-   	 	position: relative;
-   		width: 100%;
-   		height: 100%;
-	  }
-	   
-      #dummy {
-	    padding-top: 140%; /* old value: 60% */
-	  }
-	   
-      #map_canvas {
-	    position: absolute;
-	    top: 0;
-	    bottom: 55%; /* old value = 0 */
-	    left: 0;
-	    right: 0;
-	    background-color: silver; /* show me! */
-        border:2px solid gray;
-	    max-width: none;
-	  }
-    
-      #map_canvas2 {
-        position: absolute;
-        top: 55%; /* old value = 0 */
-        bottom: 0; 
-        left: 0;
-        right: 0;
-        background-color: silver; /* show me! */
-        border:2px solid gray;
-        max-width: none;
-      }
-    
-      img {
-        max-width: none;
-      }
-    </style>
+    <link rel='stylesheet' type='text/css' media='screen' href='<c:url value="/resources/css/googlemaps.css"/>'/>
+    <link rel='stylesheet' type='text/css' media='screen' href='<c:url value="/resources/css/map.css"/>'/>
 
     <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
     <!--[if lt IE 9]>
@@ -95,9 +42,8 @@
     var urlHolder = new Object();
     	
 	$(document).ready(function() {
-		urlHolder.gps = '${getGpsUrl}';
-		urlHolder.gpsperiod = '${getGpsPeriodUrl}';
 		urlHolder.ongoingIncidents = '${ongoingIncidentsUrl}';
+		urlHolder.betweenIncidents = '${betweenIncidentsUrl}';
 
 		initializeMap();
 		initializePlaces();
@@ -174,12 +120,9 @@
 		// this function helps to ensure they do not mess up the UI
 		affixWidth();
 		
-		if (typeof latlngArray === "undefined") {
-		    console.log("latlngArray is undefined");
-		}
-		
 		// set directions accordion collapsed height
 		$('#directionsDiv').height(($(window).height())/2.5);
+
 	});
 	
 	function affixWidth() {
@@ -222,7 +165,7 @@
               <span class="icon-bar"></span>
               <span class="icon-bar"></span>
             </a>
-            <a class="brand" href="#">Bird's Eye</a>
+            <a class="brand" href="" onclick="location.reload(true)">Bird's Eye</a>
             <div class="nav-collapse collapse">
               <p class="navbar-text pull-right">
                 &copy <a href="mailto:whyan1@e.ntu.edu.sg" class="navbar-link">whyan1</a> 2013
@@ -367,8 +310,40 @@
                             </div>
                             
                             <div class="form-actions">  
-                                <input class="btn btn-primary" type="submit" value="Retrieve"></input>
-                                <button class="btn btn-success" type="button" onclick="retrieveGps()">Retrieve All</button>
+                              <input class="btn btn-primary" type="submit" value="Retrieve"></input>
+                              <!-- <button class="btn btn-success" type="button" onclick="">Retrieve All</button> -->
+                            </div>
+                            
+                            <div class="control-group">
+                              <div class="controls">
+                                <div id="analyticsCheckBoxDiv" style="display: none">
+                                  <label class="checkbox">
+                                  <input type="checkbox" checked id="" onClick=""/> All
+                                  </label>
+                                  <label class="checkbox">
+                                    <input type="checkbox" checked name="" id="" value="Accident" onchange=""> Accidents
+                                  </label>
+                                  <label class="checkbox">
+                                    <input type="checkbox" checked name="" id="" value="Road Work" onchange=""> Road Works
+                                  </label>
+                                  <label class="checkbox">
+                                    <input type="checkbox" checked name="" id="" value="Vehicle Breakdown" onchange=""> Vehicle Breakdowns
+                                  </label>
+                                  <label class="checkbox">
+                                    <input type="checkbox" checked name="" id="" value="Heavy Traffic" onchange=""> Heavy Traffic
+                                  </label>
+                                  <label class="checkbox">
+                                    <input type="checkbox" checked name="" id="" value="Others" onchange=""> Others
+                                  </label>
+                                </div>
+                              </div>
+                            </div>
+                            
+                            <div class="control-group">
+                            <label class="control-label" id="panLabel" for="incidentSlider"></label>
+                              <div class="controls">
+                                <div style="margin-top: 9px; margin-right:20px" id="incidentSlider"></div>
+                              </div>
                             </div>
                         </fieldset>
                       </form>
