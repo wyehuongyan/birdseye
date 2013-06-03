@@ -1,4 +1,5 @@
 var incidentData, heatMapData, permaHeatMapData;
+var pointArray;
 
 function initializeUI() {
     // hard code data limits from 27th May 2013 till current day
@@ -54,7 +55,9 @@ function initializeUI() {
 }
 
 function initializeHeatMap() {
-    heatmap.setData(heatMapData);
+    pointArray = new google.maps.MVCArray(heatMapData);
+
+    heatmap.setData(pointArray);
     heatmap.setOptions({
         radius : 23,
         opacity : 0.6,
@@ -62,47 +65,72 @@ function initializeHeatMap() {
 
     heatmap.setMap(map2);
 
-    // set pan and slider to be visible
-    $("#panLabel").html(new Date($('#startdatetimepicker').datetimepicker('getDate').getTime()));
-
     $("#incidentSlider").slider({
         range : "min",
         min : $('#startdatetimepicker').datetimepicker('getDate').getTime(),
         max : $('#enddatetimepicker').datetimepicker('getDate').getTime(),
         value : $('#startdatetimepicker').datetimepicker('getDate').getTime(),
-        slide : function(event, ui) {
-            var date = new Date(ui.value);
+        slide : sliderMoveCallback
+    });
 
-            /*
-             * $('.ui-slider-handle').html( '<div data-toggle="tooltip"
-             * class="tooltip fade top slider-tip"><div class="tooltip-arrow"></div><div
-             * class="tooltip-inner">' + date + '</div></div>');
-             */
+    $("#analyticsInfoDiv").css("display", "block");
+}
 
-            // every time slider is slide, calculate current value //
-            // and push the filtered latlng into pointArray //
-            heatMapData = new Array();
-            heatMapData.push.apply(heatMapData, permaHeatMapData);
+function sliderMoveCallback(event, ui) {
+    var date = new Date(ui.value);
 
-            var last = 0; // this variable keeps the last occurence of key
-            // that
-            // satisfy the if condition
+    // every time slider is slide, calculate current value //
+    // and push the filtered latlng into pointArray //
+    pointArray.clear();
 
-            $.each(incidentData, function(key, heatObj) {
-                if (parseInt(heatObj.startTimestamp) <= parseInt(ui.value)) {
-                    last = key;
-                }
-            });
-
-            var newHeatMapData = heatMapData.slice(0, last);
-
-            heatmap.setData(newHeatMapData); // super
-
-            $("#panLabel").html(date);
+    $.each(incidentData, function(key, heatObj) {
+        if (heatObj.visible) {
+            if (parseInt(heatObj.startTimestamp) <= parseInt(ui.value)) {
+                pointArray.push(heatObj.latlng);
+            }
         }
     });
 
-    $("#analyticsCheckBoxDiv").css("display", "block");
+    var dateString = date.toString().split(" ");
+    // console.log(dateString);
+
+    $("#analyticsDate").val(dateString[0] + " " + dateString[1] + " " + dateString[2] + " " + dateString[3]);
+    $("#analyticsTime").val(dateString[4]);
+}
+
+function toggleAnalyticsAll(source) {
+    checkboxes = document.getElementsByName("analyticsIncidentType");
+
+    for ( var i = 0, n = checkboxes.length; i < n; i++) {
+        checkboxes[i].checked = source.checked;
+    }
+
+    filterAnalyticsIncidents();
+}
+
+function filterAnalyticsIncidents() {
+    $("input[name=analyticsIncidentType]").each(
+            function() {
+                for ( var i = 0; i < incidentData.length; i++) {
+                    if (this.value != "Others") {
+                        if (incidentData[i].data.type == this.value) {
+                            // incidentData[i].marker.setVisible(this.checked);
+                            incidentData[i].visible = this.checked;
+                        }
+                    } else {
+                        if (incidentData[i].data.type != "Accident" && incidentData[i].data.type != "Road Work"
+                                && incidentData[i].data.type != "Vehicle Breakdown" && incidentData[i].data.type != "Heavy Traffic") {
+                            // incidentData[i].marker.setVisible(this.checked);
+                            incidentData[i].visible = this.checked;
+                        }
+                    }
+                }
+            });
+
+    var tempUI = new Object();
+    tempUI.value = $("#incidentSlider").slider('value');
+
+    sliderMoveCallback(null, tempUI);
 }
 
 function retrieveBetweenIncidents() {
@@ -135,6 +163,8 @@ function parseHeatMapIncidents(data) {
 
         heatObj.latlng = latlng;
         heatObj.startTimestamp = incident.startTimestamp;
+        heatObj.data = incident;
+        heatObj.visible = true;
 
         incidentData.push(heatObj);
         heatMapData.push(latlng);

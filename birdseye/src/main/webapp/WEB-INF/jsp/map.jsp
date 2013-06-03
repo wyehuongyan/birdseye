@@ -314,37 +314,54 @@
                               <!-- <button class="btn btn-success" type="button" onclick="">Retrieve All</button> -->
                             </div>
                             
-                            <div class="control-group">
-                              <div class="controls">
-                                <div id="analyticsCheckBoxDiv" style="display: none">
-                                  <label class="checkbox">
-                                  <input type="checkbox" checked id="" onClick=""/> All
-                                  </label>
-                                  <label class="checkbox">
-                                    <input type="checkbox" checked name="" id="" value="Accident" onchange=""> Accidents
-                                  </label>
-                                  <label class="checkbox">
-                                    <input type="checkbox" checked name="" id="" value="Road Work" onchange=""> Road Works
-                                  </label>
-                                  <label class="checkbox">
-                                    <input type="checkbox" checked name="" id="" value="Vehicle Breakdown" onchange=""> Vehicle Breakdowns
-                                  </label>
-                                  <label class="checkbox">
-                                    <input type="checkbox" checked name="" id="" value="Heavy Traffic" onchange=""> Heavy Traffic
-                                  </label>
-                                  <label class="checkbox">
-                                    <input type="checkbox" checked name="" id="" value="Others" onchange=""> Others
-                                  </label>
+                            <div id="analyticsInfoDiv" style="display: none">
+                              <div class="control-group">
+                                <div class="controls">
+                                  <div>
+                                    <label class="checkbox">
+                                    <input type="checkbox" checked id="selectAllAnalyticsIncidentType" onClick="toggleAnalyticsAll(this)"/> All
+                                    </label>
+                                    <label class="checkbox">
+                                      <input type="checkbox" checked name="analyticsIncidentType" id="analyticsAccidentCheckbox" value="Accident" onchange="filterAnalyticsIncidents()"> Accidents
+                                    </label>
+                                    <label class="checkbox">
+                                      <input type="checkbox" checked name="analyticsIncidentType" id="analyticsRoadworksCheckbox" value="Road Work" onchange="filterAnalyticsIncidents()"> Road Works
+                                    </label>
+                                    <label class="checkbox">
+                                      <input type="checkbox" checked name="analyticsIncidentType" id="analyticsVehiclebreakdownCheckbox" value="Vehicle Breakdown" onchange="filterAnalyticsIncidents()"> Vehicle Breakdowns
+                                    </label>
+                                    <label class="checkbox">
+                                      <input type="checkbox" checked name="analyticsIncidentType" id="analyticsHeavytrafficCheckbox" value="Heavy Traffic" onchange="filterAnalyticsIncidents()"> Heavy Traffic
+                                    </label>
+                                    <label class="checkbox">
+                                      <input type="checkbox" checked name="analyticsIncidentType" id="analyticsOthersCheckbox" value="Others" onchange="filterAnalyticsIncidents()"> Others
+                                    </label>
+                                  </div>
+                                </div>
+                              </div>
+                            
+                              <div class="control-group">
+                              <label class="control-label" for="analyticsDate">Date:</label>
+                                <div class="controls">
+                                  <input type="text" name="analyticsDate" id="analyticsDate" />
+                                </div>
+                              </div>
+                              
+                              <div class="control-group">
+                                <label class="control-label" for="analyticsTime">Time:</label>
+                                <div class="controls">
+                                  <input type="text" name="analyticsTime" id="analyticsTime" />
+                                </div>
+                              </div>
+                            
+                              <div class="control-group">
+                              <label class="control-label" id="panLabel" for="incidentSlider">Pan: </label>
+                                <div class="controls">
+                                  <div style="margin-top: 9px; margin-right:20px" id="incidentSlider"></div>
                                 </div>
                               </div>
                             </div>
                             
-                            <div class="control-group">
-                            <label class="control-label" id="panLabel" for="incidentSlider"></label>
-                              <div class="controls">
-                                <div style="margin-top: 9px; margin-right:20px" id="incidentSlider"></div>
-                              </div>
-                            </div>
                         </fieldset>
                       </form>
                       
