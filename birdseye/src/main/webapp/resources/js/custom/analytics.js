@@ -67,9 +67,9 @@ function initializeHeatMap() {
 
     $("#incidentSlider").slider({
         range : "min",
-        min : $('#startdatetimepicker').datetimepicker('getDate').getTime(),
-        max : $('#enddatetimepicker').datetimepicker('getDate').getTime(),
-        value : $('#startdatetimepicker').datetimepicker('getDate').getTime(),
+        min : $('#startdatetimepicker').datetimepicker('getDate').getTime() + 28800000,
+        max : $('#enddatetimepicker').datetimepicker('getDate').getTime() + 28800000,
+        value : $('#startdatetimepicker').datetimepicker('getDate').getTime() + 28800000,
         slide : sliderMoveCallback
     });
 
@@ -135,8 +135,9 @@ function filterAnalyticsIncidents() {
 
 function retrieveBetweenIncidents() {
     $.post(urlHolder.betweenIncidents, {
-        startTimestamp : $('#startdatetimepicker').datetimepicker('getDate').getTime(),
-        endTimestamp : $('#enddatetimepicker').datetimepicker('getDate').getTime()
+        // + 8hrs in milliseconds as getTime() returns GMT time
+        startTimestamp : $('#startdatetimepicker').datetimepicker('getDate').getTime() + 28800000,
+        endTimestamp : $('#enddatetimepicker').datetimepicker('getDate').getTime() + 28800000
     }, function(response) {
         if (response != null) {
             // console.log(response);

@@ -7,8 +7,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @RequestMapping("/")
 public class MediatorController {
 
-	@RequestMapping
-	public String getHomePage() {
-		return "redirect:/gps";
-	}
+    @RequestMapping
+    public String getHomePage() {
+        return "redirect:/traffic";
+    }
 }
