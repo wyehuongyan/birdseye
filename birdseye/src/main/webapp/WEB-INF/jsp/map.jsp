@@ -139,20 +139,6 @@
 	}
 	
 	</script>
-    
-    <script id="modalTemplate" type="text/x-jquery-tmpl">
-		<div id="myModal" class="modal hide fade">
-			<div class="modal-body">
-				<center>
-					<div class="progress progress-striped active">
-  						<div id="loadprogress" class="bar" style="width:0%;"></div>
-					</div>
-					
-					<h5>\${status}</h5>
-				</center>
-			</div>
-		</div>
-	</script>
   </head>
 
   <body>
@@ -171,7 +157,8 @@
                 &copy <a href="mailto:whyan1@e.ntu.edu.sg" class="navbar-link">whyan1</a> 2013
               </p>
               <ul class="nav">
-                <!-- <li class="active"><a href="#">Home</a></li> -->
+                <li class=""><a href="./traffic">Map</a></li>
+                <li class=""><a href="./data">Data</a></li>
               </ul>
             </div><!--/.nav-collapse -->
           </div>
@@ -383,19 +370,6 @@
               </div>
           </div><!--/span-->
         </div><!--/row-->
-  
-          <!-- Modals -->
-          <div id="loadModal" class="modal hide fade">
-              <div class="modal-body">
-                  <div class="progress progress-striped active">
-                      <div id="loadprogress" class="bar" style="width:0%;"></div>
-                  </div>
-                      
-                  <p align="center">
-                      <span id="loadmsg"></span>
-                  </p>
-              </div>
-          </div>
   
         <footer>
         <br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>
