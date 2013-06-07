@@ -36,7 +36,20 @@
     $(document).ready(function() {
         urlHolder.allIncidents = '${allIncidentsUrl}';
         
-        initData();
+        initPieChart();
+        
+        // event listeners for tabs
+        $('a[data-toggle="tab"]').on('shown', function (e) {
+          var active = $($(e.target).attr('href')).attr('id');
+          
+          if(active == "focusTab") {
+              $("#d3Scatterplot").hide();
+              $("#d3Focus").show();
+          } else {
+              $("#d3Focus").hide();
+              $("#d3Scatterplot").show();
+          }
+        });
     });
     
     </script>
@@ -78,8 +91,8 @@
         </ul>
          
         <div class="tab-content">
-          <div class="tab-pane active" id="focusTab">
-          <div id="d3"></div>
+          <div class="tab-pane active" id="focusTab" value="d3Focus">
+          <div id="d3PieChart"></div>
           
           <form id="directionsform" class="form-horizontal">
             <fieldset>
@@ -109,7 +122,7 @@
           </form>             
           </div>
           
-          <div class="tab-pane" id="scatterTab">
+          <div class="tab-pane" id="scatterTab" value="d3Scatterplot">
           <p>Scatterplot form elements</p>
           </div>
         </div>
@@ -117,7 +130,9 @@
       
       </div>
       <div class="span9">
-        <p>To display the focus and scatterplot</p>
+        <br><br>
+        <div id="d3Focus" class="content"></div>
+        <div id="d3Scatterplot" class="content"><p>Scatterplot</p></div>
       </div>
     </div>
   </div>
