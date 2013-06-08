@@ -43,13 +43,16 @@
           var active = $($(e.target).attr('href')).attr('id');
           
           if(active == "focusTab") {
-              $("#d3Scatterplot").hide();
-              $("#d3Focus").show();
+              $(".scatterContent").hide();
+              $(".focusContent").show();
           } else {
-              $("#d3Focus").hide();
-              $("#d3Scatterplot").show();
+              $(".focusContent").hide();
+              $(".scatterContent").show();
           }
         });
+        
+        $(".scatterContent").hide();
+        $(".focusContent").show();
     });
     
     </script>
@@ -94,10 +97,11 @@
           <div class="tab-pane active" id="focusTab" value="d3Focus">
           <div id="d3PieChart"></div>
           
+          <br><br>
+          
           <form id="directionsform" class="form-horizontal">
             <fieldset>
                 <div class="control-group">
-                
                     <div class="controls">
                       <div>
                         <label class="checkbox">
@@ -130,9 +134,29 @@
       
       </div>
       <div class="span9">
-        <br><br>
-        <div id="d3Focus" class="content"></div>
-        <div id="d3Scatterplot" class="content"><p>Scatterplot</p></div>
+        <div class="row-fluid">
+          <div class="container">  
+            <div id="dummy"></div> 
+            <div id="d3Focus" class="focusContent"></div>
+            <div id="d3Scatterplot" class="scatterContent"><p>Scatterplot</p></div>
+          </div>
+        </div>
+        
+        <div class="row-fluid">
+          <div class="focusContent">
+              <br><br>
+              <p>To show incident information, click on a dot.</p>
+              
+              <table id="infoTable" class="table table-hover table-condensed">
+              <tr>
+                <th>#</th>
+                <th>Occurred on</th>
+                <th>Message</th>
+                <th>Time Elapsed</th>
+              </tr>
+              </table>
+          </div>
+        </div>
       </div>
     </div>
   </div>
