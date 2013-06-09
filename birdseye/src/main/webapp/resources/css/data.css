@@ -1,6 +1,9 @@
 .frame {
     overflow: hidden;
     padding-top: 60px;
+    fill: none;
+    stroke: #aaa;
+    shape-rendering: crispEdges;
 }
 
 .container {
@@ -16,7 +19,7 @@
 }   
    
 #dummy {
-    padding-top: 5%;
+    padding-top: 0%;
 }
 
 div.tooltip {
@@ -26,8 +29,8 @@ div.tooltip {
   height: 12px;
   padding: 10px;
   margin-left: -45px;
-  margin-top: -15px;
-  font: 12px sans-serif;
+  margin-top: -20px;
+  font: 14px sans-serif;
   font-weight: bold;
   /*background: #ddd;*/
   /*border: solid 1px #aaa;*/
@@ -35,14 +38,36 @@ div.tooltip {
   pointer-events: none;
 }
 
-.axis path,
-.axis line {
+.scatter path {
+  display: none;
+}
+
+.scatter line {
+  stroke: #ddd;
+}
+
+.axis path {
   fill: none;
   stroke: #000;
   shape-rendering: crispEdges;
 }
 
-.brush .extent {
+.axis line {
+  fill: none;
+  stroke: #bbb;
+  shape-rendering: crispEdges;
+}
+
+circle {
+  fill-opacity: .7;
+}
+
+circle.hiddenfied {
+  fill: #ccc !important;
+}
+
+.extent {
+  fill: #000;
   stroke: #fff;
   fill-opacity: .125;
   shape-rendering: crispEdges;

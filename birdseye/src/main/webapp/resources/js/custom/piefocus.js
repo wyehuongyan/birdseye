@@ -145,52 +145,67 @@ function initPieChart() {
         }
 
         function mousedown() {
-            // change focus
-            var focus = focusFunction.prototype.focus;
-            var context = focusFunction.prototype.context;
+            // pie chart = this, the dom that called this mousedown
+            // console.log(this);
+            var caller = this;
 
-            focus.select(".line").remove();
-            focus.select(".area").remove();
-            focus.selectAll("circle").remove();
-            focus.selectAll(".axis").remove();
+            d3.select("#d3Focus").transition().duration(200).style("opacity", 1e-6).each("end", function() {
+                // change focus
+                var focus = focusFunction.prototype.focus;
+                var context = focusFunction.prototype.context;
 
-            context.select(".area2").remove();
-            context.select(".axis").remove();
-            context.select(".brush").remove();
+                focus.select(".line").remove();
+                focus.select(".area").remove();
+                focus.selectAll("circle").remove();
+                focus.selectAll(".axis").remove();
 
-            var incidentType = this.getAttribute("type");
-            var newData;
+                context.select(".area2").remove();
+                context.select(".axis").remove();
+                context.select(".brush").remove();
 
-            switch (incidentType) {
-            case "Accident":
-                newData = data[0].data;
+                var incidentType = caller.getAttribute("type");
+                var newData;
 
-                break;
+                switch (incidentType) {
+                case "Accident":
+                    newData = data[0].data;
 
-            case "Vehicle Breakdown":
-                newData = data[1].data;
+                    break;
 
-                break;
+                case "Vehicle Breakdown":
+                    newData = data[1].data;
 
-            case "Road Work":
-                newData = data[2].data;
+                    break;
 
-                break;
+                case "Road Work":
+                    newData = data[2].data;
 
-            case "Heavy Traffic":
-                newData = data[3].data;
+                    break;
 
-                break;
+                case "Heavy Traffic":
+                    newData = data[3].data;
 
-            default: // others
-                newData = data[4].data;
+                    break;
 
-                break;
-            }
+                default: // others
+                    newData = data[4].data;
 
-            // call
-            binning(newData);
-            draw(focusFunction.prototype.bins, this.getAttribute("fill"));
+                    break;
+                }
+
+                // call
+                binning(newData);
+                draw(focusFunction.prototype.bins, caller.getAttribute("fill"));
+
+                // change title label
+                $("#focusLabel").text(incidentType);
+
+                // clear infoTable
+                $('.infoRow').remove();
+
+                // fade in
+                d3.select("#d3Focus").transition().duration(200).style("opacity", 1.0);
+            });
         }
 
         d3.selectAll("input[name=dataIncidentType]").on("change", change);
@@ -510,7 +525,7 @@ function draw(data, color) {
             .attr("stroke", "gray").style("stroke-width", "1").attr("fill", "#E5E4E2").attr("r", 4).attr("cx", xx).attr("cy", yy).on(
                     "mousedown",
                     function(d) {
-                        // console.log(d.data);
+                        console.log(d.data);
                         // clear table first
                         $('.infoRow').remove();
 
@@ -562,6 +577,8 @@ String.prototype.toHHMMSS = function() {
     var minutes = Math.floor((sec_num - (hours * 3600)) / 60);
     var seconds = sec_num - (hours * 3600) - (minutes * 60);
 
+    hours = Math.abs(hours);
+
     if (hours < 10) {
         hours = "0" + hours;
     }
@@ -573,4 +590,4 @@ String.prototype.toHHMMSS = function() {
     }
     var time = hours + ':' + minutes + ':' + seconds;
     return time;
-}
+};

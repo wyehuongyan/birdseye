@@ -21,7 +21,8 @@
     <script type='text/javascript' src='<c:url value="/resources/js/bootstrap/bootstrap.js"/>'></script>
     <script type='text/javascript' src='<c:url value="/resources/js/d3/d3.v3.min.js"/>'></script>
     
-    <script type='text/javascript' src='<c:url value="/resources/js/custom/data.js"/>'></script>
+    <script type='text/javascript' src='<c:url value="/resources/js/custom/piefocus.js"/>'></script>
+    <script type='text/javascript' src='<c:url value="/resources/js/custom/scatterplot.js"/>'></script>
     
     <!-- Le styles -->
     <link rel='stylesheet' type='text/css' media='screen' href='<c:url value="/resources/css/bootstrap.css"/>'/>
@@ -30,6 +31,9 @@
     
     <link rel='stylesheet' type='text/css' media='screen' href='<c:url value="/resources/css/data.css"/>'/>
     
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="./resources/icons/camera-lens-icon.png">
+    
     <script type="text/javascript">
     var urlHolder = new Object();
     
@@ -37,6 +41,8 @@
         urlHolder.allIncidents = '${allIncidentsUrl}';
         
         initPieChart();
+        initScatterPlot();
+        initializeUI();
         
         // event listeners for tabs
         $('a[data-toggle="tab"]').on('shown', function (e) {
@@ -127,7 +133,76 @@
           </div>
           
           <div class="tab-pane" id="scatterTab" value="d3Scatterplot">
-          <p>Scatterplot form elements</p>
+          <form id="scatterPlotForm" class="form-horizontal">
+              <fieldset> 
+                  <div class="control-group">
+                    <label class="control-label" for="startdatetimepicker">Start Date:</label>
+                    <div class="controls">
+                      <input type="text" name="startdatetimepicker" id="startdatetimepicker" />
+                    </div>
+                  </div>
+                                              
+                  <div class="control-group">
+                    <label class="control-label" for="enddatetimepicker">End Date:</label>
+                    <div class="controls">
+                      <input type="text" name="enddatetimepicker" id="enddatetimepicker" />
+                    </div>
+                  </div>
+                  
+                  <div class="form-actions">  
+                    <input id="retrieveButton" onclick="$(this).button('loading')" class="btn btn-primary" data-loading-text="Retrieving..." type="submit" value="Retrieve"></input>
+                  </div>
+                  
+                  <div id="scatterPlotInfoDiv" style="display: none">
+                    <div class="control-group">
+                      <div class="controls">
+                        <div>
+                          <label class="checkbox">
+                          <input type="checkbox" checked id="selectAllScatterPlotIncidentType" onClick="toggleScatterPlotAll(this)"/> All
+                          </label>
+                          <label class="checkbox">
+                            <input type="checkbox" checked name="scatterPlotIncidentType" id="scatterPlotAccidentCheckbox" value="Accident" onchange="filterScatterPlotIncidents()"> Accidents
+                          </label>
+                          <label class="checkbox">
+                            <input type="checkbox" checked name="scatterPlotIncidentType" id="scatterPlotRoadworksCheckbox" value="Road Work" onchange="filterScatterPlotIncidents()"> Road Works
+                          </label>
+                          <label class="checkbox">
+                            <input type="checkbox" checked name="scatterPlotIncidentType" id="scatterPlotVehiclebreakdownCheckbox" value="Vehicle Breakdown" onchange="filterScatterPlotIncidents()"> Vehicle Breakdowns
+                          </label>
+                          <label class="checkbox">
+                            <input type="checkbox" checked name="scatterPlotIncidentType" id="scatterPlotHeavytrafficCheckbox" value="Heavy Traffic" onchange="filterScatterPlotIncidents()"> Heavy Traffic
+                          </label>
+                          <label class="checkbox">
+                            <input type="checkbox" checked name="scatterPlotIncidentType" id="scatterPlotOthersCheckbox" value="Others" onchange="filterScatterPlotIncidents()"> Others
+                          </label>
+                        </div>
+                      </div>
+                    </div>
+                  
+                    <div class="control-group">
+                    <label class="control-label" for="scatterPlotDate">Date:</label>
+                      <div class="controls">
+                        <input type="text" name="scatterPlotDate" id="scatterPlotDate" />
+                      </div>
+                    </div>
+                    
+                    <div class="control-group">
+                      <label class="control-label" for="scatterPlotTime">Time:</label>
+                      <div class="controls">
+                        <input type="text" name="scatterPlotTime" id="scatterPlotTime" />
+                      </div>
+                    </div>
+                  
+                    <div class="control-group">
+                    <label class="control-label" id="panLabel" for="incidentSlider">Pan: </label>
+                      <div class="controls">
+                        <div style="margin-top: 9px; margin-right:20px" id="incidentSlider"></div> <!-- incidentSlider not initialized, does not appear -->
+                      </div>
+                    </div>
+                  </div>
+                  
+              </fieldset>
+            </form>
           </div>
         </div>
       </div>
@@ -137,15 +212,16 @@
         <div class="row-fluid">
           <div class="container">  
             <div id="dummy"></div> 
+            <H3 class="focusContent" id="focusLabel">All Incidents</H3>
             <div id="d3Focus" class="focusContent"></div>
-            <div id="d3Scatterplot" class="scatterContent"><p>Scatterplot</p></div>
+            <div id="d3Scatterplot" class="scatterContent"><H3>Accident vs Heavy Traffic</H3></div>
           </div>
         </div>
         
         <div class="row-fluid">
           <div class="focusContent">
               <br><br>
-              <p>To show incident information, click on a dot.</p>
+              <p>To show incident information, click on any dot.</p>
               
               <table id="infoTable" class="table table-hover table-condensed">
               <tr>

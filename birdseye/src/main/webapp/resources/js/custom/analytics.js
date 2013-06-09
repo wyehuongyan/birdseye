@@ -74,6 +74,9 @@ function initializeHeatMap() {
     });
 
     $("#analyticsInfoDiv").css("display", "block");
+
+    // reset retrieve loading button to original state
+    $("#retrieveButton").button('reset');
 }
 
 function sliderMoveCallback(event, ui) {

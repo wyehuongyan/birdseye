@@ -34,6 +34,9 @@
     <link rel='stylesheet' type='text/css' media='screen' href='<c:url value="/resources/css/googlemaps.css"/>'/>
     <link rel='stylesheet' type='text/css' media='screen' href='<c:url value="/resources/css/map.css"/>'/>
 
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="./resources/icons/camera-lens-icon.png">
+
     <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
     <!--[if lt IE 9]>
       <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
@@ -297,7 +300,7 @@
                             </div>
                             
                             <div class="form-actions">  
-                              <input class="btn btn-primary" type="submit" value="Retrieve"></input>
+                              <input id="retrieveButton" onclick="$(this).button('loading')" class="btn btn-primary" data-loading-text="Retrieving..." type="submit" value="Retrieve"></input>
                               <!-- <button class="btn btn-success" type="button" onclick="">Retrieve All</button> -->
                             </div>
                             
