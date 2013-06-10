@@ -1,7 +1,7 @@
 <%@ taglib uri='http://java.sun.com/jsp/jstl/core' prefix='c' %>
 
 <c:url value="/data/incidents/all" var="allIncidentsUrl"/>
-<c:url value="/traffic/incidents/between" var="betweenIncidentsUrl"/>
+<c:url value="../traffic/incidents/between" var="betweenIncidentsUrl"/>
 
 <%@ page language="java" contentType="text/html; charset=US-ASCII"
     pageEncoding="US-ASCII"%>
