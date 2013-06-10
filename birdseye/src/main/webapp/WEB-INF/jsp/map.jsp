@@ -18,7 +18,6 @@
     <script type='text/javascript' src='<c:url value="/resources/js/jquery/jquery-ui-timepicker-addon.js"/>'></script>
 	<script type='text/javascript' src='<c:url value="/resources/js/bootstrap/bootstrap.js"/>'></script>
 	<script type="text/javascript" src='<c:url value="https://maps.googleapis.com/maps/api/js?key=AIzaSyDn1xjmKkgF7KL8Y6txLXmsrJIc7nzTDSo&libraries=places,visualization&sensor=false"/>'></script>
-    <script type="text/javascript" src="<c:url value="/resources/js/jquery/jquery.tmpl.js"/>"></script>
     <script type="text/javascript" src="<c:url value="/resources/js/jquery/jquery.validate.js"/>"></script>
     <script type="text/javascript" src="<c:url value="/resources/js/custom/validation.js"/>"></script>
     
@@ -300,7 +299,7 @@
                             </div>
                             
                             <div class="form-actions">  
-                              <input id="retrieveButton" onclick="$(this).button('loading')" class="btn btn-primary" data-loading-text="Retrieving..." type="submit" value="Retrieve"></input>
+                              <input id="retrieveButton" class="btn btn-primary" data-loading-text="Retrieving..." type="submit" value="Retrieve"></input>
                               <!-- <button class="btn btn-success" type="button" onclick="">Retrieve All</button> -->
                             </div>
                             

@@ -1,3 +1,5 @@
+var incidentData;
+
 function initializeUI() {
     // hard code data limits from 27th May 2013 till current day
 
@@ -51,8 +53,64 @@ function initializeUI() {
     });
 }
 
-function initScatterPlot() {
-    var width = 960, size = $("#d3PieChart").height() / 2.3, padding = 30;
+function retrieveBetweenIncidents() {
+    $("#retrieveButton").button('loading');
+
+    $.post(urlHolder.betweenIncidents, {
+        // + 8hrs in milliseconds as getTime() returns GMT time
+        startTimestamp : $('#startdatetimepicker').datetimepicker('getDate').getTime() + 28800000,
+        endTimestamp : $('#enddatetimepicker').datetimepicker('getDate').getTime() + 28800000
+    }, function(response) {
+        if (response != null) {
+            // console.log(response);
+            incidentData = response;
+            initScatterPlot(response);
+
+            $("#retrieveButton").button('reset');
+            $(".scatterPlotInfoDiv").css("display", "block");
+
+            // reset checkboxes to all true
+            var checkboxes = document.getElementsByName("scatterPlotIncidentType");
+
+            for ( var i = 0, n = checkboxes.length; i < n; i++) {
+                checkboxes[i].checked = true;
+            }
+        } else {
+            alert('Failure! An error has occurred retrieving Gps period!');
+        }
+    });
+}
+
+function toggleScatterPlotAll(source) {
+    var checkboxes = document.getElementsByName("scatterPlotIncidentType");
+
+    for ( var i = 0, n = checkboxes.length; i < n; i++) {
+        checkboxes[i].checked = source.checked;
+    }
+}
+
+function filterScatterPlotIncidents(checkbox) {
+    // console.log(checkbox);
+
+    if (checkbox.value == "All") {
+        d3.selectAll(".scatterCircle").attr("opacity", Number(checkbox.checked));
+    } else {
+        // $("#selectAllScatterPlotIncidentType").attr("checked", false);
+
+        if (checkbox.value != "Others") {
+            d3.selectAll(".scatterCircle").filter(function(d) {
+                return d.type == checkbox.value;
+            }).attr("opacity", Number(checkbox.checked));
+        } else {
+            d3.selectAll(".scatterCircle").filter(function(d) {
+                return (d.type != "Accident") && (d.type != "Road Work") && (d.type != "Vehicle Breakdown") && (d.type != "Heavy Traffic");
+            }).attr("opacity", Number(checkbox.checked));
+        }
+    }
+}
+
+function initScatterPlot(data) {
+    var width = 960, size = $(window).height() / 2.5, padding = 30;
 
     var x = d3.scale.linear().range([ padding / 2, size - padding / 2 ]);
 
@@ -64,11 +122,14 @@ function initScatterPlot() {
 
     var color = d3.scale.category10();
 
-    d3.csv("./resources/flowers.csv", function(error, data) {
-        console.log(data);
+    parseIncidents(data);
+
+    // data
+    function parseIncidents(data) {
+        // console.log(data);
 
         var domainByTrait = {}, traits = d3.keys(data[0]).filter(function(d) {
-            return d !== "species";
+            return ((d == "latitude") || (d == "longitude"));
         }), n = traits.length;
 
         traits.forEach(function(trait) {
@@ -82,8 +143,9 @@ function initScatterPlot() {
 
         var brush = d3.svg.brush().x(x).y(y).on("brushstart", brushstart).on("brush", brushmove).on("brushend", brushend);
 
-        var svg = d3.select("#d3Scatterplot").append("svg").attr("width", size * n + padding).attr("height", size * n + padding).append("g").attr(
-                "transform", "translate(" + padding + "," + padding / 2 + ")");
+        d3.select(".scatterplot").remove(); // remove the old one
+        var svg = d3.select("#d3Scatterplot").append("svg").attr("class", "scatterplot").attr("width", size * n + padding).attr("height",
+                size * n + padding).append("g").attr("transform", "translate(" + padding + "," + padding / 2 + ")");
 
         svg.selectAll(".x.axis").data(traits).enter().append("g").attr("class", "x axis scatter").attr("transform", function(d, i) {
             return "translate(" + (n - i - 1) * size + ",0)";
@@ -119,12 +181,15 @@ function initScatterPlot() {
             cell.append("rect").attr("class", "frame").attr("x", padding / 2).attr("y", padding / 2).attr("width", size - padding).attr("height",
                     size - padding);
 
-            cell.selectAll("circle").data(data).enter().append("circle").attr("cx", function(d) {
+            cell.selectAll("circle").data(data).enter().append("circle").attr("class", "scatterCircle").attr("value", function(d) {
+                return d.type;
+            }).attr("cx", function(d) {
                 return x(d[p.x]);
             }).attr("cy", function(d) {
                 return y(d[p.y]);
-            }).attr("r", 3).style("fill", function(d) {
-                return color(d.species);
+            }).attr("r", 8).style("fill", function(d) {
+                console.log(d.type + ": " + color(d.type));
+                return color(d.type);
             });
 
             cell.call(brush);
@@ -173,5 +238,5 @@ function initScatterPlot() {
         }
 
         d3.select(self.frameElement).style("height", size * n + padding + 20 + "px");
-    });
+    }
 }

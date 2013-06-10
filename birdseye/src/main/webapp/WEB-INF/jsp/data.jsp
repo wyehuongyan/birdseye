@@ -1,6 +1,7 @@
 <%@ taglib uri='http://java.sun.com/jsp/jstl/core' prefix='c' %>
 
 <c:url value="/data/incidents/all" var="allIncidentsUrl"/>
+<c:url value="/traffic/incidents/between" var="betweenIncidentsUrl"/>
 
 <%@ page language="java" contentType="text/html; charset=US-ASCII"
     pageEncoding="US-ASCII"%>
@@ -20,6 +21,8 @@
     <script type='text/javascript' src='<c:url value="/resources/js/jquery/jquery-ui-timepicker-addon.js"/>'></script>
     <script type='text/javascript' src='<c:url value="/resources/js/bootstrap/bootstrap.js"/>'></script>
     <script type='text/javascript' src='<c:url value="/resources/js/d3/d3.v3.min.js"/>'></script>
+    <script type="text/javascript" src="<c:url value="/resources/js/jquery/jquery.validate.js"/>"></script>
+    <script type="text/javascript" src="<c:url value="/resources/js/custom/validation.js"/>"></script>
     
     <script type='text/javascript' src='<c:url value="/resources/js/custom/piefocus.js"/>'></script>
     <script type='text/javascript' src='<c:url value="/resources/js/custom/scatterplot.js"/>'></script>
@@ -39,10 +42,11 @@
     
     $(document).ready(function() {
         urlHolder.allIncidents = '${allIncidentsUrl}';
+        urlHolder.betweenIncidents = '${betweenIncidentsUrl}';
         
         initPieChart();
-        initScatterPlot();
         initializeUI();
+        setupFormValidation();
         
         // event listeners for tabs
         $('a[data-toggle="tab"]').on('shown', function (e) {
@@ -150,59 +154,41 @@
                   </div>
                   
                   <div class="form-actions">  
-                    <input id="retrieveButton" onclick="$(this).button('loading')" class="btn btn-primary" data-loading-text="Retrieving..." type="submit" value="Retrieve"></input>
+                    <input id="retrieveButton" class="btn btn-primary" data-loading-text="Retrieving..." type="submit" value="Retrieve"></input>
                   </div>
                   
-                  <div id="scatterPlotInfoDiv" style="display: none">
+                  <div class="scatterPlotInfoDiv" style="display: none">
                     <div class="control-group">
                       <div class="controls">
                         <div>
                           <label class="checkbox">
-                          <input type="checkbox" checked id="selectAllScatterPlotIncidentType" onClick="toggleScatterPlotAll(this)"/> All
+                          <input type="checkbox" checked id="selectAllScatterPlotIncidentType" value="All" onClick="filterScatterPlotIncidents(this); toggleScatterPlotAll(this);"/> All
                           </label>
                           <label class="checkbox">
-                            <input type="checkbox" checked name="scatterPlotIncidentType" id="scatterPlotAccidentCheckbox" value="Accident" onchange="filterScatterPlotIncidents()"> Accidents
+                            <input type="checkbox" checked name="scatterPlotIncidentType" id="scatterPlotAccidentCheckbox" value="Accident" onchange="filterScatterPlotIncidents(this)"> Accidents
                           </label>
                           <label class="checkbox">
-                            <input type="checkbox" checked name="scatterPlotIncidentType" id="scatterPlotRoadworksCheckbox" value="Road Work" onchange="filterScatterPlotIncidents()"> Road Works
+                            <input type="checkbox" checked name="scatterPlotIncidentType" id="scatterPlotRoadworksCheckbox" value="Road Work" onchange="filterScatterPlotIncidents(this)"> Road Works
                           </label>
                           <label class="checkbox">
-                            <input type="checkbox" checked name="scatterPlotIncidentType" id="scatterPlotVehiclebreakdownCheckbox" value="Vehicle Breakdown" onchange="filterScatterPlotIncidents()"> Vehicle Breakdowns
+                            <input type="checkbox" checked name="scatterPlotIncidentType" id="scatterPlotVehiclebreakdownCheckbox" value="Vehicle Breakdown" onchange="filterScatterPlotIncidents(this)"> Vehicle Breakdowns
                           </label>
                           <label class="checkbox">
-                            <input type="checkbox" checked name="scatterPlotIncidentType" id="scatterPlotHeavytrafficCheckbox" value="Heavy Traffic" onchange="filterScatterPlotIncidents()"> Heavy Traffic
+                            <input type="checkbox" checked name="scatterPlotIncidentType" id="scatterPlotHeavytrafficCheckbox" value="Heavy Traffic" onchange="filterScatterPlotIncidents(this)"> Heavy Traffic
                           </label>
                           <label class="checkbox">
-                            <input type="checkbox" checked name="scatterPlotIncidentType" id="scatterPlotOthersCheckbox" value="Others" onchange="filterScatterPlotIncidents()"> Others
+                            <input type="checkbox" checked name="scatterPlotIncidentType" id="scatterPlotOthersCheckbox" value="Others" onchange="filterScatterPlotIncidents(this)"> Others
                           </label>
                         </div>
-                      </div>
-                    </div>
-                  
-                    <div class="control-group">
-                    <label class="control-label" for="scatterPlotDate">Date:</label>
-                      <div class="controls">
-                        <input type="text" name="scatterPlotDate" id="scatterPlotDate" />
-                      </div>
-                    </div>
-                    
-                    <div class="control-group">
-                      <label class="control-label" for="scatterPlotTime">Time:</label>
-                      <div class="controls">
-                        <input type="text" name="scatterPlotTime" id="scatterPlotTime" />
-                      </div>
-                    </div>
-                  
-                    <div class="control-group">
-                    <label class="control-label" id="panLabel" for="incidentSlider">Pan: </label>
-                      <div class="controls">
-                        <div style="margin-top: 9px; margin-right:20px" id="incidentSlider"></div> <!-- incidentSlider not initialized, does not appear -->
                       </div>
                     </div>
                   </div>
                   
               </fieldset>
             </form>
+            
+            <div style="position:static;color:red;" class="errormsg"></div>
+            
           </div>
         </div>
       </div>
@@ -212,9 +198,16 @@
         <div class="row-fluid">
           <div class="container">  
             <div id="dummy"></div> 
-            <H3 class="focusContent" id="focusLabel">All Incidents</H3>
-            <div id="d3Focus" class="focusContent"></div>
-            <div id="d3Scatterplot" class="scatterContent"><H3>Accident vs Heavy Traffic</H3></div>
+            <div id="d3Focus" class="focusContent"><H3 class="focusContent" id="focusLabel">All Incidents</H3></div>
+            
+            <div class="row-fluid">
+              <div class="span9">
+                  <div id="d3Scatterplot" class="scatterContent">
+                  <!-- <H3 class="scatterContent" id="scatterLabel"></H3> -->
+                  </div>
+              </div>
+              <div id="d3Legend" class="span3 scatterPlotInfoDiv" style="display: none"><h3></h3></div>
+            </div>
           </div>
         </div>
         

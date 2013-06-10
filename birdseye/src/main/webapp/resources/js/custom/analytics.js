@@ -137,6 +137,8 @@ function filterAnalyticsIncidents() {
 }
 
 function retrieveBetweenIncidents() {
+    $("#retrieveButton").button('loading');
+
     $.post(urlHolder.betweenIncidents, {
         // + 8hrs in milliseconds as getTime() returns GMT time
         startTimestamp : $('#startdatetimepicker').datetimepicker('getDate').getTime() + 28800000,
@@ -144,6 +146,13 @@ function retrieveBetweenIncidents() {
     }, function(response) {
         if (response != null) {
             // console.log(response);
+            // reset checkboxes to all true
+            var checkboxes = document.getElementsByName("analyticsIncidentType");
+
+            for ( var i = 0, n = checkboxes.length; i < n; i++) {
+                checkboxes[i].checked = true;
+            }
+
             parseHeatMapIncidents(response);
 
         } else {
