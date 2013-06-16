@@ -188,7 +188,7 @@ function initScatterPlot(data) {
             }).attr("cy", function(d) {
                 return y(d[p.y]);
             }).attr("r", 8).style("fill", function(d) {
-                console.log(d.type + ": " + color(d.type));
+                // console.log(d.type + ": " + color(d.type));
                 return color(d.type);
             });
 

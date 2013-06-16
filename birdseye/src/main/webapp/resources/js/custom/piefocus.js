@@ -112,6 +112,10 @@ function initPieChart() {
 
             parseIncidents(incidentArray);
 
+            // after doing all the intensive stuffs, disable the bootstrap
+            // loading modal
+            $('#loadingModal').modal('hide');
+
         } else {
             alert("An error has occurred retrieving ongoing incidents");
         }
@@ -306,7 +310,7 @@ function initPieChart() {
                 });
 
                 path = path.data(pie); // compute the new angles
-                path.transition().duration(750).attrTween("d", arcTween); // redraw
+                path.transition().duration(1500).attrTween("d", arcTween); // redraw
                 // the
                 // arcs
             }

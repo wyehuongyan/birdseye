@@ -1,0 +1,13 @@
+---
+applications:
+- name: birdseye
+  memory: 512M
+  instances: 1
+  url: birdseye.cfapps.io
+  path: .
+  services:
+    mongolab-birdseye-1:
+      label: mongolab
+      provider: mongolab
+      version: n/a
+      plan: sandbox

@@ -1,7 +1,7 @@
 <%@ taglib uri='http://java.sun.com/jsp/jstl/core' prefix='c' %>
 
 <c:url value="/data/incidents/all" var="allIncidentsUrl"/>
-<c:url value="../traffic/incidents/between" var="betweenIncidentsUrl"/>
+<c:url value="/data/incidents/between" var="betweenIncidentsUrl"/>
 
 <%@ page language="java" contentType="text/html; charset=US-ASCII"
     pageEncoding="US-ASCII"%>
@@ -63,8 +63,19 @@
         
         $(".scatterContent").hide();
         $(".focusContent").show();
+        
+        // modal parameters
+        $('#loadingModal').modal({
+          keyboard: false,
+          show: true,
+          backdrop: "static"
+        });
+        
+        // progress bar parameters
+        $( "#progressbar" ).progressbar({
+          value: false
+        });
     });
-    
     </script>
 </head>
 <body>
@@ -227,6 +238,16 @@
           </div>
         </div>
       </div>
+    </div>
+  
+    <!-- Modal -->
+    <div id="loadingModal" class="modal hide fade">
+    <div class="modal-header">
+      <h3>Loading Data...</h3>
+    </div>
+    <div class="modal-body">
+      <div id="progressbar"></div>
+    </div>
     </div>
   </div>
 
