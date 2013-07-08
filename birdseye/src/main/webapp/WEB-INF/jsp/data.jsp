@@ -128,6 +128,14 @@
               $('.ui-slider-handle:eq(1)').html('<div class="tooltip top slider-tip"><div class="tooltip-arrow"></div><div class="tooltip-inner">' + ui.value + '</div></div>');
           }
         });
+        
+        // logo follow mouse
+        $(document).mousemove(function(e) {
+            $('#incidentImage').offset({
+                left: e.pageX + 20,
+                top: e.pageY - 220
+            });
+        });
     });
     </script>
 </head>
@@ -190,9 +198,8 @@
                     <input id="retrieveButton" class="btn btn-primary" data-loading-text="Retrieving..." type="submit" value="Retrieve"></input>
                 </div>
             
-                <div id="d3PieChart"></div>
-            
                 <div class="control-group focusFilter" style="display: none;">
+                <label class="control-label">Check to filter Incident Types: </label>
                   <div class="controls">
                     <div>
                       <label class="checkbox">
@@ -213,6 +220,8 @@
                     </div>
                   </div>
                 </div>
+                
+                <div id="d3PieChart"></div>
             </fieldset>
           </form>            
           
@@ -292,7 +301,7 @@
         <div class="row-fluid">
           <div class="container">  
             <div id="dummy"></div> 
-            <div class="focusContent"><div id="d3Focus"><H3 id="focusLabel">Focus Context</H3></div></div>
+            <div class="focusContent"><div id="d3Focus"><H3 id="focusLabel">Focus Context</H3></div><img style="position: absolute; display: none;" class="img-polaroid" id="incidentImage" src=""></div>
             
             <div id="d3Scatterplot" class="scatterContent"><H3 class="scatterContent" id="scatterLabel">Similarity</H3>
             

@@ -608,13 +608,32 @@ function draw(data, color) {
 
                         for ( var i = 0; i < d.data.length; i++) {
                             htmlString += "<tr class='infoRow' id='row" + (i + 1) + "'>" + "<td>" + (i + 1) + "</td>" + "<td>"
-                                    + (new Date((parseInt(d.data[i].startTimestamp)) /*- 28800000*/)).toString() + "</td>" + "<td>" // cloud
+                                    + (new Date((parseInt(d.data[i].startTimestamp)) /*- 28800000*/)).toString() + "</td>"
+                                    + "<td class='infoMsg' id='infoMsg" + (i + 1) + "'>"// cloud
                                     // deployment
                                     + d.data[i].message + "</td>" + "<td>" + (d.data[i].timeElapsed.replace("PT", "").replace("S", "")).toHHMMSS()
                                     + "</td>" + "</tr>";
                         }
 
                         $('#infoTable tr:last').after(htmlString);
+
+                        $('#infoTable > tbody > tr > .infoMsg').mouseover(
+                                function() {
+                                    // mouse is over row n
+                                    var incident = d.data[((this.id).replace(/^\D+/g, '') - 1)];
+
+                                    $('#incidentImage').css("display", "inline");
+                                    $('#incidentImage').attr(
+                                            "src",
+                                            "http://maps.googleapis.com/maps/api/staticmap?center=" + incident.latitude + "," + incident.longitude
+                                                    + "&zoom=13&size=200x200&maptype=roadmap&markers=color:red%7C" + incident.latitude + ","
+                                                    + incident.longitude + "&sensor=false");
+                                });
+
+                        $('#infoTable > tbody > tr').mouseout(function() {
+                            // remove image on mouse out
+                            $('#incidentImage').css("display", "none");
+                        });
                     }).on("mouseover", function(d) {
                 div.transition().duration(500).style("opacity", 1);
             }).on("mousemove", function(d) {

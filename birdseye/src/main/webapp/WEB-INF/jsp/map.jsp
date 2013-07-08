@@ -214,9 +214,11 @@
                                 <label class="checkbox">
                                   <input type="checkbox" id="avoidhighwaysCheckbox" value=""> Avoid Expressways
                                 </label>
+                                <!-- Todo: invent an algorithm to avoid incidents 
                                 <label class="checkbox">
                                   <input type="checkbox" id="" value="" disabled> Avoid Incidents
                                 </label>
+                                -->
                               </div>
                             </div>
                             

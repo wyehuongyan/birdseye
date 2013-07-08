@@ -120,7 +120,7 @@ function addSimMarkerPair(rowId) {
 
     // set viewport to center of targetIncidentMarker
     map.panTo(new google.maps.LatLng(targetIncident.latitude, targetIncident.longitude));
-    map.setZoom(14);
+    map.setZoom(13);
 }
 
 google.maps.Map.prototype.clearMarkers = function() {
