@@ -1,4 +1,63 @@
+function initializePieUI() {
+    // jquery ui elements
+    var startDateTextBox = $('#piestartdatetimepicker');
+    var endDateTextBox = $('#pieenddatetimepicker');
+
+    startDateTextBox.datetimepicker({
+        minDate : new Date(2013, 4, 27, 0, 0),
+        maxDate : new Date(),
+        dateFormat : "D MM d yy",
+        separator : ' @ ',
+        defaultDate : new Date(startDateTextBox.datepicker("option", "minDate")),
+        onClose : function(dateText, inst) {
+            if (endDateTextBox.val() != '') {
+                var testStartDate = startDateTextBox.datetimepicker('getDate');
+                var testEndDate = endDateTextBox.datetimepicker('getDate');
+
+                if (testStartDate > testEndDate) {
+                    endDateTextBox.datetimepicker('setDate', testStartDate);
+                }
+            } else {
+                // endDateTextBox.val(dateText);
+                endDateTextBox.datetimepicker('setDate', dateText);
+            }
+        },
+        onSelect : function(selectedDateTime) {
+            endDateTextBox.datetimepicker('option', 'minDate', startDateTextBox.datetimepicker('getDate'));
+        }
+    });
+    endDateTextBox.datetimepicker({
+        minDate : new Date(2013, 4, 27, 0, 0),
+        maxDate : new Date(),
+        dateFormat : "D MM d yy",
+        separator : ' @ ',
+        onClose : function(dateText, inst) {
+            if (startDateTextBox.val() != '') {
+                var testStartDate = startDateTextBox.datetimepicker('getDate');
+                var testEndDate = endDateTextBox.datetimepicker('getDate');
+                if (testStartDate > testEndDate) {
+                    startDateTextBox.datetimepicker('setDate', testEndDate);
+                }
+            } else {
+                // startDateTextBox.val(dateText);
+                startDateTextBox.datetimepicker('setDate', dateText);
+            }
+        },
+        onSelect : function(selectedDateTime) {
+            startDateTextBox.datetimepicker('option', 'maxDate', endDateTextBox.datetimepicker('getDate'));
+        }
+    });
+}
+
 function initPieChart() {
+    // clear table and previous pie focus charts
+    $("#pieRetrieveButton").button('loading');
+    $('.infoRow').remove();
+    $('.focusContentInner').remove();
+
+    // show loading modal
+    $('#loadingModal').modal('show');
+
     var width = $("#d3PieChart").width(), height = $("#d3PieChart").width(), radius = Math.min(width, height) / 2;
 
     var color = d3.scale.category20();
@@ -9,15 +68,21 @@ function initPieChart() {
 
     var arc = d3.svg.arc().innerRadius(radius - 100).outerRadius(radius - 20);
 
-    var svg = d3.select("#d3PieChart").append("svg").attr("width", width).attr("height", height).append("g").attr("transform",
-            "translate(" + width / 2 + "," + height / 2 + ")");
+    var svg = d3.select("#d3PieChart").append("svg").attr("class", "focusContentInner").attr("width", width).attr("height", height).append("g").attr(
+            "transform", "translate(" + width / 2 + "," + height / 2 + ")");
 
-    var div = d3.select("body").append("div").attr("class", "tooltip").style("opacity", 0);
+    var div = d3.select("body").append("div").attr("id", "pie").attr("class", "tooltip").style("opacity", 0);
 
     var incidentData;
 
-    $.post(urlHolder.allIncidents, function(response) {
+    $.post(urlHolder.betweenIncidents, {
+        startTimestamp : $('#piestartdatetimepicker').datetimepicker('getDate').getTime() + 28800000,
+        endTimestamp : $('#pieenddatetimepicker').datetimepicker('getDate').getTime() + 28800000,
+    }, function(response) {
         if (response != null) {
+            // show the filter checkboxes
+            $(".focusFilter").css("display", "block");
+
             // do stuff here
             incidentData = response;
 
@@ -113,8 +178,9 @@ function initPieChart() {
             parseIncidents(incidentArray);
 
             // after doing all the intensive stuffs, disable the bootstrap
-            // loading modal
+            // hide loading modal and reset retrieve button
             $('#loadingModal').modal('hide');
+            $("#pieRetrieveButton").button('reset');
 
         } else {
             alert("An error has occurred retrieving ongoing incidents");
@@ -377,7 +443,7 @@ var focusFunction = function(incidentData) {
         return focusFunction.prototype.y2(d.count);
     });
 
-    var svg = d3.select("#d3Focus").append("svg").attr("width", width + margin.left + margin.right).attr("height",
+    var svg = d3.select("#d3Focus").append("svg").attr("class", "focusContentInner").attr("width", width + margin.left + margin.right).attr("height",
             focusFunction.prototype.height + margin.top + margin.bottom);
 
     svg.append("defs").append("clipPath").attr("id", "clip").append("rect").attr("width", width).attr("height", focusFunction.prototype.height);
@@ -428,9 +494,11 @@ function binning(incidentData) {
 
     // bin data into hourly intervals
     var minStartTimestamp = d3.min(incidentData.map(function(d) {
+        // return ((parseInt(d.startTimestamp) - 28800000)); // cloud deployment
         return d.startTimestamp;
     }));
     var maxStartTimestamp = d3.max(incidentData.map(function(d) {
+        // return ((parseInt(d.startTimestamp) - 28800000)); // cloud deployment
         return d.startTimestamp;
     }));
 
@@ -469,6 +537,9 @@ function binning(incidentData) {
 
     // see which bin does each incident fall into
     $.each(incidentData, function(key, incident) {
+        // var startTimestamp = parseInt(incident.startTimestamp) - 28800000; //
+        // cloud
+        // deployment
         var startTimestamp = parseInt(incident.startTimestamp);
 
         for ( var i = 0; i < bins.length; i++) {
@@ -509,7 +580,7 @@ function draw(data, color) {
 
     var brush = focusFunction.prototype.brush;
 
-    var div = d3.select("body").append("div").attr("class", "tooltip").style("opacity", 0);
+    var div = d3.select("body").append("div").attr("id", "focus").attr("class", "tooltip").style("opacity", 0);
 
     // calculating the x and y axis ranges
     x.domain(d3.extent(data.map(function(d) {
@@ -537,8 +608,10 @@ function draw(data, color) {
 
                         for ( var i = 0; i < d.data.length; i++) {
                             htmlString += "<tr class='infoRow' id='row" + (i + 1) + "'>" + "<td>" + (i + 1) + "</td>" + "<td>"
-                                    + (new Date(parseInt(d.data[i].startTimestamp))).toString() + "</td>" + "<td>" + d.data[i].message + "</td>"
-                                    + "<td>" + (d.data[i].timeElapsed.replace("PT", "").replace("S", "")).toHHMMSS() + "</td>" + "</tr>";
+                                    + (new Date((parseInt(d.data[i].startTimestamp)) /*- 28800000*/)).toString() + "</td>" + "<td>" // cloud
+                                    // deployment
+                                    + d.data[i].message + "</td>" + "<td>" + (d.data[i].timeElapsed.replace("PT", "").replace("S", "")).toHHMMSS()
+                                    + "</td>" + "</tr>";
                         }
 
                         $('#infoTable tr:last').after(htmlString);

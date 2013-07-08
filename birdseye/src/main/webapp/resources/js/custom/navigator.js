@@ -282,7 +282,9 @@ function parseIncidents(data) {
             position : new google.maps.LatLng(val.latitude, val.longitude),
             icon : icons[val.type].icon,
             map : map,
-            title : val.type
+            title : val.type,
+            draggable : false,
+            animation : google.maps.Animation.DROP
         });
 
         var infowindow = new google.maps.InfoWindow({

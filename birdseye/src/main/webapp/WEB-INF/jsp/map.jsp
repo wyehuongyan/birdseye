@@ -7,7 +7,7 @@
 <html lang="en">
   <head>
     <meta charset="utf-8">
-    <title>Bird's Eye</title>
+    <title>PETRINA: PErsonalized TRaffic INformation Analytics</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="">
     <meta name="author" content="">
@@ -153,7 +153,7 @@
               <span class="icon-bar"></span>
               <span class="icon-bar"></span>
             </a>
-            <a class="brand" href="" onclick="location.reload(true)">Bird's Eye</a>
+            <a class="brand" href="" onclick="location.reload(true)">PETRINA</a>
             <div class="nav-collapse collapse">
               <p class="navbar-text pull-right">
                 &copy <a href="mailto:whyan1@e.ntu.edu.sg" class="navbar-link">whyan1</a> 2013

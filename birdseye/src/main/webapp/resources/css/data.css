@@ -6,6 +6,31 @@
     shape-rendering: crispEdges;
 }
 
+.simRow {
+    cursor: hand; cursor: pointer;
+}
+
+#simMapContainer img {
+  max-width: none;
+}
+
+div#focus.tooltip,
+div#pie.tooltip {
+  position: absolute;
+  text-align: center;
+  width: 140px;
+  height: 12px;
+  padding: 10px;
+  margin-left: -45px;
+  margin-top: -20px;
+  font: 14px sans-serif;
+  font-weight: bold;
+  /*background: #ddd;*/
+  /*border: solid 1px #aaa;*/
+  border-radius: 8px;
+  pointer-events: none;
+}
+
 .container {
     display: inline-block;
     position: relative;
@@ -24,22 +49,6 @@
    
 #dummy {
     padding-top: 0%;
-}
-
-div.tooltip {
-  position: absolute;
-  text-align: center;
-  width: 140px;
-  height: 12px;
-  padding: 10px;
-  margin-left: -45px;
-  margin-top: -20px;
-  font: 14px sans-serif;
-  font-weight: bold;
-  /*background: #ddd;*/
-  /*border: solid 1px #aaa;*/
-  border-radius: 8px;
-  pointer-events: none;
 }
 
 .scatter path {
@@ -81,4 +90,17 @@ circle.hiddenfied {
   fill: none;
   stroke: grey;
   stroke-width: 1.5px;
+}
+
+.slider-tip {
+  position: absolute;
+  text-align: center;
+  font: 14px sans-serif;
+  opacity:0.4;
+  bottom:110%;
+  margin-left: -1.36em;
+}
+
+.ui-datepicker { 
+  z-index: 9999 !important;
 }

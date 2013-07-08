@@ -59,6 +59,47 @@ public final class TrafficInfoStream {
         timer.purge();
     }
 
+    private void cleanUp() {
+        System.out.println("Cleaning up timestamp errors...");
+
+        final List<Incident> incidents = trafficInfoService.read("incident", Incident.class);
+        for (final Incident i : incidents) {
+            final String message = i.getMessage();
+            final String createDate = i.getCreateDate();
+
+            // extract date occurred and time occurred from message
+            final String messageValues[] = message.split(" ");
+            final String dateTime = messageValues[0];
+
+            // System.out.println("dateTime: " + dateTime);
+
+            // time and date that incident occurred
+            final String dateTimeValues[] = dateTime.split("\\)");
+            final String createDateValues[] = createDate.split("T");
+
+            final String dateOccurred = createDateValues[0]; // taken from create date (need the year)
+            final String timeOccurred = dateTimeValues[1];
+            final String dateOccurred2 = dateTimeValues[0]; // taken from message need the month and day
+
+            final String dateOccurredValues[] = dateOccurred.split("-");
+            final String dateOccurredValues2[] = dateOccurred2.split("/");
+            final String timeOccurredValues[] = timeOccurred.split(":");
+
+            // Joda Time: year, month, day, hour, min
+            System.out.println(String.format("Year: %s, month: %s, day: %s, hour: %s, min: %s", Integer.parseInt(dateOccurredValues[0]),
+                    Integer.parseInt(dateOccurredValues2[1]), Integer.parseInt(dateOccurredValues2[0].substring(1)),
+                    Integer.parseInt(timeOccurredValues[0]), Integer.parseInt(timeOccurredValues[1])));
+
+            final DateTime dateTimeOccurred = new DateTime(Integer.parseInt(dateOccurredValues[0]), Integer.parseInt(dateOccurredValues2[1]),
+                    Integer.parseInt(dateOccurredValues2[0].substring(1)), Integer.parseInt(timeOccurredValues[0]),
+                    Integer.parseInt(timeOccurredValues[1]));
+
+            i.setStartTimestamp(String.valueOf(dateTimeOccurred.getMillis()));
+
+            trafficInfoService.update(i);
+        }
+    }
+
     private Incident parseIncidentEntry(final Node node, final HashMap<String, String> map) throws JaxenException {
         final XPath xPath = new Dom4jXPath(".//d:*");
         xPath.setNamespaceContext(new SimpleNamespaceContext(map));
@@ -89,19 +130,22 @@ public final class TrafficInfoStream {
         final String dateTimeValues[] = dateTime.split("\\)");
         final String createDateValues[] = createDate.split("T");
 
-        final String dateOccurred = createDateValues[0];
+        final String dateOccurred = createDateValues[0]; // taken from create date (need the year)
         final String timeOccurred = dateTimeValues[1];
+        final String dateOccurred2 = dateTimeValues[0]; // taken from message need the month and day
 
         final String dateOccurredValues[] = dateOccurred.split("-");
+        final String dateOccurredValues2[] = dateOccurred2.split("/");
         final String timeOccurredValues[] = timeOccurred.split(":");
 
         // Joda Time: year, month, day, hour, min
         System.out.println(String.format("Year: %s, month: %s, day: %s, hour: %s, min: %s", Integer.parseInt(dateOccurredValues[0]),
-                Integer.parseInt(dateOccurredValues[1]), Integer.parseInt(dateOccurredValues[2]), Integer.parseInt(timeOccurredValues[0]),
-                Integer.parseInt(timeOccurredValues[1])));
+                Integer.parseInt(dateOccurredValues2[1]), Integer.parseInt(dateOccurredValues2[0].substring(1)),
+                Integer.parseInt(timeOccurredValues[0]), Integer.parseInt(timeOccurredValues[1])));
 
-        final DateTime dateTimeOccurred = new DateTime(Integer.parseInt(dateOccurredValues[0]), Integer.parseInt(dateOccurredValues[1]),
-                Integer.parseInt(dateOccurredValues[2]), Integer.parseInt(timeOccurredValues[0]), Integer.parseInt(timeOccurredValues[1]));
+        final DateTime dateTimeOccurred = new DateTime(Integer.parseInt(dateOccurredValues[0]), Integer.parseInt(dateOccurredValues2[1]),
+                Integer.parseInt(dateOccurredValues2[0].substring(1)), Integer.parseInt(timeOccurredValues[0]),
+                Integer.parseInt(timeOccurredValues[1]));
 
         // time and date that incident was updated
         final String dateUpdated = createDateValues[0];
@@ -329,6 +373,14 @@ public final class TrafficInfoStream {
 
         // System.out.println(incident.getIncidentMap());
         return incident;
+    }
+
+    class TrafficTimeStampCleanUpTask extends TimerTask {
+
+        @Override
+        public void run() {
+            cleanUp();
+        }
     }
 
     class TrafficInfoRetrievalTask extends TimerTask {
