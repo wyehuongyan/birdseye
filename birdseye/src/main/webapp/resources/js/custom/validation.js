@@ -79,9 +79,9 @@ function setupFormValidation() {
 function keepCount() {
     var MAX_CREDITS = 2;
 
-    $("input[name='scatterPlotIncidentType']").change(function() {
+    $("input[name='similarityIncidentType']").change(function() {
         var totalCredits = 0;
-        $("input[name='scatterPlotIncidentType']").each(function() {
+        $("input[name='similarityIncidentType']").each(function() {
             // augment totalCredits accordingly to each checkbox.
             if (this.checked) {
                 totalCredits += 1;
