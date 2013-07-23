@@ -174,7 +174,7 @@
                   <!-- nav tabs -->
                   <ul class=" nav nav-tabs" id="myTab">
                     <li class="active"><a href="#navigatorTab" data-toggle="tab">Navigator</a></li>
-                    <li><a href="#analyticsTab" data-toggle="tab">Analytics</a></li>
+                    <li><a href="#analyticsTab" data-toggle="tab">Heat Map</a></li>
                   </ul>
                    
                   <div class="tab-content">

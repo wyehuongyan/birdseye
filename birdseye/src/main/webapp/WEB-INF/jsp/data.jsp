@@ -3,6 +3,8 @@
 <c:url value="/data/incidents/all" var="allIncidentsUrl"/>
 <c:url value="/data/incidents/between" var="betweenIncidentsUrl"/>
 <c:url value="/data/incidents/similarity" var="similarIncidentsUrl"/>
+<c:url value="/data/incidents/congestion" var="congestionUrl"/>
+<c:url value="/data/incidents/directions" var="updatedirectionsUrl"/>
 
 <%@ page language="java" contentType="text/html; charset=US-ASCII"
     pageEncoding="US-ASCII"%>
@@ -30,6 +32,7 @@
     
     <script type='text/javascript' src='<c:url value="/resources/js/custom/piefocus.js"/>'></script>
     <script type='text/javascript' src='<c:url value="/resources/js/custom/similarity.js"/>'></script>
+    <script type='text/javascript' src='<c:url value="/resources/js/custom/congestion.js"/>'></script>
     
     <!-- Le styles -->
     <link rel='stylesheet' type='text/css' media='screen' href='<c:url value="/resources/css/bootstrap.css"/>'/>
@@ -49,9 +52,12 @@
         urlHolder.allIncidents = '${allIncidentsUrl}';
         urlHolder.betweenIncidents = '${betweenIncidentsUrl}';
         urlHolder.similarIncidents = '${similarIncidentsUrl}';
+        urlHolder.congestion = '${congestionUrl}';
+        urlHolder.updateDirections = '${updatedirectionsUrl}';
         
         initializePieUI();
         initializeSimUI();
+        initializeCongUI();
         setupFormValidation();
         
         // event listeners for tabs
@@ -60,13 +66,21 @@
           
           if(active == "focusTab") {
               $(".scatterContent").hide();
+              $(".congestContent").hide();
               $(".focusContent").show();
-          } else {
+          } else if(active == "scatterTab") {
+              $(".congestContent").hide();
               $(".focusContent").hide();
               $(".scatterContent").show();
+          } else {
+              // congestion tab
+              $(".congestContent").show();
+              $(".focusContent").hide();
+              $(".scatterContent").hide();
           }
         });
         
+        $(".congestContent").hide();
         $(".scatterContent").hide();
         $(".focusContent").show();
         
@@ -173,9 +187,11 @@
         <ul class=" nav nav-tabs" id="myTab">
           <li class="active"><a href="#focusTab" data-toggle="tab">Pie Focus</a></li>
           <li><a href="#scatterTab" data-toggle="tab">Similarity</a></li>
+          <li><a href="#congestTab" data-toggle="tab">Congestion</a></li>
         </ul>
          
         <div class="tab-content">
+          <!-- Pie Focus Tab -->
           <div class="tab-pane active" id="focusTab" value="d3Focus">
        
           <form id="focusform" class="form-horizontal">
@@ -229,6 +245,7 @@
            
           </div>
           
+          <!-- Similarity Tab -->
           <div class="tab-pane" id="scatterTab" value="d3Scatterplot">
           <form name="scatterPlotForm" id="scatterPlotForm" class="form-horizontal">
               <fieldset> 
@@ -293,6 +310,35 @@
             <div style="position:static;color:red;" class="errormsg"></div>
             
           </div>
+          
+          <!-- Congestion Tab -->
+          <div class="tab-pane" id="congestTab" value="d3Congestion">
+            <form id="congestform" class="form-horizontal">
+              <fieldset>
+                <div class="control-group">
+                  <label class="control-label" for="congeststartdatetimepicker">Start Date:</label>
+                  <div class="controls">
+                    <input type="text" name="congeststartdatetimepicker" id="congeststartdatetimepicker" />
+                  </div>
+                </div>
+                                            
+                <div class="control-group">
+                  <label class="control-label" for="congestenddatetimepicker">End Date:</label>
+                  <div class="controls">
+                    <input type="text" name="congestenddatetimepicker" id="congestenddatetimepicker" />
+                  </div>
+                </div>
+                
+                <div class="form-actions">  
+                  <input id="congestRetrieveButton" class="btn btn-primary" data-loading-text="Retrieving..." type="submit" value="Retrieve"></input>
+                </div>
+             </fieldset>
+            </form>
+            
+            <div style="position:static;color:red;" class="errormsg"></div>
+            
+          </div>
+          
         </div>
       </div>
       
@@ -305,37 +351,48 @@
             
             <div id="d3Scatterplot" class="scatterContent"><H3 class="scatterContent" id="scatterLabel">Similarity</H3>
             
-            <div id="similarDiv" class="similarContent" style="overflow: scroll; display: none;">
-              <table id="similarTable" class="table table-hover table-bordered table-condensed">
-                <thead>
+              <div id="similarDiv" class="similarContent" style="overflow: scroll; display: none;">
+                <table id="similarTable" class="table table-hover table-bordered table-condensed">
+                  <thead>
+                    <tr>
+                      <th colspan="3" style="text-align:center;">Incident</th>
+                      <th colspan="2" style="text-align:center;">Best Match</th>
+                      <th colspan="2" style="text-align:center;"></th>
+                    </tr>
+                    <tr>
+                      <th>#</th>
+                      <th>Occurred on</th>
+                      <th>Message</th>
+                      <th>Occurred on</th>
+                      <th>Message</th>
+                      <th>Time Apart</th>
+                      <th>Similarity</th>
+                    </tr>    
+                  </thead>      
+                  
+                  <!-- 
+                  <tbody data-provides="rowlink">
                   <tr>
-                    <th colspan="3" style="text-align:center;">Incident</th>
-                    <th colspan="2" style="text-align:center;">Best Match</th>
-                    <th colspan="2" style="text-align:center;"></th>
+                  <td colspan="7"><a href="">test</a></td>
                   </tr>
-                  <tr>
-                    <th>#</th>
-                    <th>Occurred on</th>
-                    <th>Message</th>
-                    <th>Occurred on</th>
-                    <th>Message</th>
-                    <th>Time Apart</th>
-                    <th>Similarity</th>
-                  </tr>    
-                </thead>      
-                
-                <!-- 
-                <tbody data-provides="rowlink">
-                <tr>
-                <td colspan="7"><a href="">test</a></td>
-                </tr>
-                </tbody>
-                -->
-                
-             </table>
-           </div>
+                  </tbody>
+                  -->
+                  
+               </table>
+             </div>
                   
            </div>
+           
+           <div class="congestContent">
+            <div class="span6">
+              <H3 id="congestLabel">Congestion Analysis</H3>
+              <div id="congestMapContainer" style="height: 400px; border-style:solid; border-width:2px; border-color: gray"></div>
+            </div>
+            <div class="span6">
+              <div id="d3Barchart"></div>
+            </div>
+           </div>
+           
           </div>
         </div>
         
@@ -392,6 +449,10 @@
                 </div>
               </div>
             </div>
+          </div>
+          
+          <div class="congestContent">
+            <div id="d3Linechart"></div>
           </div>
         </div>
       </div>

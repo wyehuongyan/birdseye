@@ -1,0 +1,44 @@
+[
+	{
+		"exit": "2",
+        "name": "Dairy Farm Rd",
+        "lat": "1.3620023196707263",
+        "lng": "103.78027223384379"
+	},
+	{
+		"exit": "3",
+        "name": "Bukit Panjang Rd",
+        "lat": "1.373326061487094",
+        "lng": "103.77773553466795"
+	},
+	{
+		"exit": "5",
+        "name": "Kranji Expressway (KJE)",
+        "lat": "1.3863739058187665",
+        "lng": "103.77485752439497"
+	},
+	{
+		"exit": "7",
+        "name": "Mandai Rd",
+        "lat": "1.4060594968342848",
+        "lng": "103.77235301172732"
+	},
+	{
+		"exit": "8",
+        "name": "Seletar Expressway and Turf Club Ave",
+        "lat": "1.4175646914714797",
+        "lng": "103.77122179007529"
+	},
+	{
+		"exit": "10A",
+        "name": "Woodlands Ave 3",
+        "lat": "1.4280549283694877",
+        "lng": "103.77000071442126"
+	},
+	{
+		"exit": "10B",
+        "name": "Woodlands Rd and Woodlands Centre Rd",
+        "lat": "1.4363403650568203",
+        "lng": "103.76852013504504"
+	}
+]

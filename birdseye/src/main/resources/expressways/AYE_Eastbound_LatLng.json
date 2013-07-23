@@ -1,0 +1,98 @@
+[
+	{
+		"exit": "26A",
+        "name": "Tuas West Rd",
+        "lat": "1.3418249855608753",
+        "lng": "103.64384703671931"
+	},
+	{
+		"exit": "22",
+        "name": "Tuas Rd and Pan Island Expressway (PIE)",
+        "lat": "1.3272263300324239",
+        "lng": "103.65920335388182"
+	},
+	{
+		"exit": "20",
+        "name": "Benoi Rd",
+        "lat": "1.3225303672318798",
+        "lng": "103.67484197354315"
+	},
+	{
+		"exit": "18",
+        "name": "First Lok Yang Rd, Pioneer Rd North and Pioneer Rd",
+        "lat": "1.3228239908625874",
+        "lng": "103.68989385998248"
+	},
+	{
+		"exit": "17",
+        "name": "Jalan Boon Lay, Jurong Pier Rd, Corporation Rd and Jurong Port Rd",
+        "lat": "1.3221066910642303",
+        "lng": "103.7040358070135"
+	},
+	{
+		"exit": "15B",
+        "name": "Yuan Ching Rd",
+        "lat": "1.3243658495402284",
+        "lng": "103.72276030814646"
+	},
+	{
+		"exit": "13",
+        "name": "Jurong Town Hall Rd",
+        "lat": "1.324638691388964",
+        "lng": "103.74239474868773"
+	},
+	{
+		"exit": "11",
+        "name": "Clementi Ave 6",
+        "lat": "1.3161812505136365",
+        "lng": "103.75886351203917"
+	},
+	{
+		"exit": "10B",
+        "name": "Clementi Ave 2",
+        "lat": "1.3098240731059767",
+        "lng": "103.76496084368227"
+	},
+	{
+		"exit": "9",
+        "name": "Clementi Rd",
+        "lat": "1.3059828097168678",
+        "lng": "103.76837127244471"
+	},
+	{
+		"exit": "8",
+        "name": "North Buona Vista Rd and South Buona Vista Rd",
+        "lat": "1.2973677664366365",
+        "lng": "103.78326826131342"
+	},
+	{
+		"exit": "7B",
+        "name": "Portsdown Rd",
+        "lat": "1.290948195996979",
+        "lng": "103.79047267472743"
+	},
+	{
+		"exit": "6",
+        "name": "Alexandra Rd",
+        "lat": "1.285828483096105",
+        "lng": "103.79823163485526"
+	},
+	{
+		"exit": "3",
+        "name": "Lower Delta Rd",
+        "lat": "1.2793143592801581",
+        "lng": "103.8198978487253"
+	},
+	{
+		"exit": "2C",
+        "name": "Central Expressway (CTE)",
+        "lat": "1.2788343634975585",
+        "lng": "103.82343031799792"
+	},
+	{
+		"exit": "2B",
+        "name": "Keppel Rd",
+        "lat": "1.2749300369285428",
+        "lng": "103.82934056556223"
+	}
+]

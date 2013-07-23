@@ -1,0 +1,98 @@
+[
+	{
+		"exit": "2A",
+        "name": "Keppel Rd",
+        "lat": "1.2722927360626168",
+        "lng": "103.83333035147189"
+	},
+	{
+		"exit": "3",
+        "name": "Lower Delta Rd",
+        "lat": "1.2766951633251287",
+        "lng": "103.8269386473894"
+	},
+	{
+		"exit": "7A",
+        "name": "Queensway and Normanton Park",
+        "lat": "1.2875312563693777",
+        "lng": "103.79512898957728"
+	},
+	{
+		"exit": "8",
+        "name": "North Buona Vista Rd and South Buona Vista Rd",
+        "lat": "1.2922775632642418",
+        "lng": "103.78799565470217"
+	},
+	{
+		"exit": "9",
+        "name": "Clementi Rd",
+        "lat": "1.302171037136632",
+        "lng": "103.77483137285708"
+	},
+	{
+		"exit": "10A",
+        "name": "Clementi Ave 2",
+        "lat": "1.307310157940233",
+        "lng": "103.76669824457167"
+	},
+	{
+		"exit": "11",
+        "name": "Clementi Ave 6 and West Coast Way",
+        "lat": "1.3121911733209501",
+        "lng": "103.76245297825335"
+	},
+	{
+		"exit": "13",
+        "name": "Jurong Town Hall Rd",
+        "lat": "1.3223848961509685",
+        "lng": "103.74972120261191"
+	},
+	{
+		"exit": "14",
+        "name": "Penjuru Rd",
+        "lat": "1.3261383154610287",
+        "lng": "103.7398868832588"
+	},
+	{
+		"exit": "15A",
+        "name": "Corporation Rd and Jurong Port Rd",
+        "lat": "1.3251930898442514",
+        "lng": "103.72722685670851"
+	},
+	{
+		"exit": "17",
+        "name": "Jalan Boon Lay and Jurong Pier Rd",
+        "lat": "1.3227294681909019",
+        "lng": "103.71621504759787"
+	},
+	{
+		"exit": "18",
+        "name": "Pioneer Rd North and Pioneer Rd",
+        "lat": "1.3222756252411567",
+        "lng": "103.7001378867626"
+	},
+	{
+		"exit": "20",
+        "name": "Benoi Rd",
+        "lat": "1.3226905865234118",
+        "lng": "103.68393533265589"
+	},
+	{
+		"exit": "22",
+        "name": "Tuas Rd and Pan-Island Expressway (PIE)",
+        "lat": "1.3218311674418357",
+        "lng": "103.66756312882899"
+	},
+	{
+		"exit": "24",
+        "name": "Tuas Ave 8 and Tuas West Rd",
+        "lat": "1.3306673489350638",
+        "lng": "103.65524575448035"
+	},
+	{
+		"exit": "26B",
+        "name": "Tuas West Drive",
+        "lat": "1.3429914262569593",
+        "lng": "103.64225983953474"
+	}
+]

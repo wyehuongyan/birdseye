@@ -1,0 +1,44 @@
+[
+    {
+        "exit": "1",
+        "name": "Tampines Expressway (PIE)",
+        "lat": "1.3934655909254334",
+        "lng": "103.85782629585265"
+    },
+    {
+        "exit": "3",
+        "name": "Lentor Ave",
+        "lat": "1.3951495194484385",
+        "lng": "103.83760311043261"
+    },
+    {
+        "exit": "5",
+        "name": "Upper Thomson Rd",
+        "lat": "1.3932396816331323",
+        "lng": "103.82255860006808"
+    },
+    {
+        "exit": "8A",
+        "name": "Mandai Rd and Mandai Ave",
+        "lat": "1.4167093284994967",
+        "lng": "103.80328491663931"
+    },
+    {
+        "exit": "9",
+        "name": "Woodlands Ave 12",
+        "lat": "1.4207783329165318",
+        "lng": "103.79812501704691"
+    },
+    {
+        "exit": "10",
+        "name": "Woodlands Ave 2",
+        "lat": "1.4260331700231161",
+        "lng": "103.78703475332259"
+    },
+    {
+        "exit": "11",
+        "name": "Bukit Timah Expressway (PIE) and Turf Club Ave",
+        "lat": "1.4236380276148572",
+        "lng": "103.77420842981337"
+    }
+]

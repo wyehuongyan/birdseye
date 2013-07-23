@@ -1,0 +1,56 @@
+[
+    {
+        "exit": "12",
+        "name": "Piccadilly Circus and Jalan Kayu",
+        "lat": "1.4011612416892305",
+        "lng": "103.86900842523573"
+    },
+    {
+        "exit": "10",
+        "name": "Sengkang East Rd and Punggol Way",
+        "lat": "1.4006135642415536",
+        "lng": "103.89215052461623"
+    },
+    {
+        "exit": "9",
+        "name": "Punggol Rd",
+        "lat": "1.4003668747251419",
+        "lng": "103.89434121882914"
+    },
+    {
+        "exit": "7",
+        "name": "Kallang–Paya Lebar Expressway and Lorong Halus",
+        "lat": "1.3848971111693962",
+        "lng": "103.91532749271391"
+    },
+    {
+        "exit": "5",
+        "name": "Tampines Ave 10 and Pasir Ris Drive 12",
+        "lat": "1.3775318941736356",
+        "lng": "103.92798081374167"
+    },
+    {
+        "exit": "4",
+        "name": "Elias Rd",
+        "lat": "1.3727850811956155",
+        "lng": "103.938124928236"
+    },
+    {
+        "exit": "3C",
+        "name": "Pasir Ris Drive 1 and Tampines Ave 12",
+        "lat": "1.3687930852977714",
+        "lng": "103.94366167819499"
+    },
+    {
+        "exit": "2",
+        "name": "Loyang Ave and Tampines Ave 7",
+        "lat": "1.3631090884073163",
+        "lng": "103.95850636398791"
+    },
+    {
+        "exit": "1",
+        "name": "Upper Changi Rd North, Upper Changi Rd East, Pan Island Expressway",
+        "lat": "1.3555768836363498",
+        "lng": "103.96337323224543"
+    }
+]

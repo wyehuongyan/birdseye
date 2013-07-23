@@ -1,0 +1,176 @@
+[
+    {
+        "exit": "1",
+        "name": "Changi South Ave 3 (Changi Business Park and Singapore Expo)",
+        "lat": "1.3397267316447266",
+        "lng": "103.97316061294077"
+    },
+    {
+        "exit": "2",
+        "name": "Upper Changi Rd North/East, Tampines Expressway (TPE), Changi Village and Pasir Ris Town",
+        "lat": "1.3450588404670254",
+        "lng": "103.9681033078432"
+    },
+    {
+        "exit": "3A",
+        "name": "Simei Rd (Simei New Town and Changi General Hospital)Rd North/East, Tampines Expressway (TPE), Changi Village and Pasir Ris Town",
+        "lat": "1.350165694644614",
+        "lng": "103.95804770624636"
+    },
+    {
+        "exit": "4B",
+        "name": "Tampines Ave 5/Central (Tampines New Town) and Temasek Polytechnic",
+        "lat": "1.3436772126819898",
+        "lng": "103.94957259631155"
+    },
+    {
+        "exit": "6",
+        "name": "Bedok North Ave 3",
+        "lat": "1.3350073296926808",
+        "lng": "103.93693603909014"
+    },
+    {
+        "exit": "9",
+        "name": "Jalan Eunos, Eunos Crescent, Eunos Link and Still Rd",
+        "lat": "1.3270902444406023",
+        "lng": "103.90884995794295"
+    },
+    {
+        "exit": "11",
+        "name": "Paya Lebar Rd, Geylang Rd and Airport Rd",
+        "lat": "1.3236746947472022",
+        "lng": "103.89439151024817"
+    },
+    {
+        "exit": "12",
+        "name": "Kallang Bahru, Bendemeer Rd, Kallang–Paya Lebar Expressway (ECP)",
+        "lat": "1.3202148956489062",
+        "lng": "103.88015769755839"
+    },
+    {
+        "exit": "15A",
+        "name": "Central Expressway (City), (Balestier Rd and Moulmein Rd)",
+        "lat": "1.3269776218762106",
+        "lng": "103.86998541986941"
+    },
+    {
+        "exit": "15B",
+        "name": "Central Expressway (Ang Mo Kio, SLE)",
+        "lat": "1.3296966509262655",
+        "lng": "103.86399336493014"
+    },
+    {
+        "exit": "16",
+        "name": "Kim Keat Link (Toa Payoh)",
+        "lat": "1.3297422362004114",
+        "lng": "103.85900445616244"
+    },
+    {
+        "exit": "17",
+        "name": "Jalan Datoh (Balestier Rd), Thomson Rd (Newton Rd, Moulmein Rd), Whitley Rd (Catholic Junior College, Thomson Rd)",
+        "lat": "1.3295712914180196",
+        "lng": "103.84898037052153"
+    },
+    {
+        "exit": "17C",
+        "name": "Thomson Rd, Whitley Rd (Catholic Junior College)",
+        "lat": "1.3283605997970143",
+        "lng": "103.84006269609927"
+    },
+    {
+        "exit": "19",
+        "name": "Whitley Rd and Stevens Rd",
+        "lat": "1.326794610198106",
+        "lng": "103.82939555084704"
+    },
+    {
+        "exit": "20A",
+        "name": "Adam Rd and Farrer Rd",
+        "lat": "1.3310870014088245",
+        "lng": "103.81876461541651"
+    },
+    {
+        "exit": "22",
+        "name": "Eng Neo Ave and Bukit Timah Rd",
+        "lat": "1.3373321725838718",
+        "lng": "103.80832411682604"
+    },
+    {
+        "exit": "24",
+        "name": "Bukit Timah Expressway (Woodlands) and Dairy Farm Rd",
+        "lat": "1.3485098898559196",
+        "lng": "103.79694886839388"
+    },
+    {
+        "exit": "26A",
+        "name": "Clementi Rd, Upper Bukit Timah Rd, Jalan Jurong Kechil and Dunearn Rd",
+        "lat": "1.3423492135747113",
+        "lng": "103.782067302227"
+    },
+    {
+        "exit": "27",
+        "name": "Clementi Ave 6, (Commonwealth Ave West (Clementi New Town) and AYE)",
+        "lat": "1.3321931138172443",
+        "lng": "103.76649305558203"
+    },
+    {
+        "exit": "28",
+        "name": "Toh Tuck Ave, Bukit Batok East Ave 3 and Old Toh Tuck Rd",
+        "lat": "1.3339984222751213",
+        "lng": "103.76208819782732"
+    },
+    {
+        "exit": "30",
+        "name": "Toh Guan Rd (Toh Guan Rd East, Jurong East Central)",
+        "lat": "1.3399378978550764",
+        "lng": "103.75156857407092"
+    },
+    {
+        "exit": "31",
+        "name": "Jurong Town Hall Rd, Bukit Batok Rd (Bukit Batok New Town, Jurong East New Town)",
+        "lat": "1.3449495705639607",
+        "lng": "103.74026574528216"
+    },
+    {
+        "exit": "32",
+        "name": "Jurong Canal Rd (Jurong East New Town, Jurong West New Town)",
+        "lat": "1.352263269212895",
+        "lng": "103.73033151364325"
+    },
+    {
+        "exit": "34",
+        "name": "Jurong Rd, Jurong West Ave 2 (Corporation Rd)",
+        "lat": "1.355456218007178",
+        "lng": "103.72153990304469"
+    },
+    {
+        "exit": "35",
+        "name": "Kranji Expressway (Choa Chu Kang, BKE)",
+        "lat": "1.3594918096606778",
+        "lng": "103.71163249349593"
+    },
+    {
+        "exit": "36",
+        "name": "Jalan Bahar (Nanyang Technological University, Jurong West Ave 3, Jurong West Ave 5)",
+        "lat": "1.3571254253384248",
+        "lng": "103.69985558426379"
+    },
+    {
+        "exit": "38",
+        "name": "Pioneer Rd North (Nanyang Technological University, Jurong West Street 91)",
+        "lat": "1.3475593099176342",
+        "lng": "103.69226895606516"
+    },
+    {
+        "exit": "40",
+        "name": "Upper Jurong Rd (Benoi Rd), Pasir Laba Rd (SAFTI)",
+        "lat": "1.333999092645644",
+        "lng": "103.67621392345427"
+    },
+    {
+        "exit": "41",
+        "name": "Jalan Ahmad Ibrahim, Ayer Rajah Expressway",
+        "lat": "1.3267805323761497",
+        "lng": "103.66642721331118"
+    }
+]

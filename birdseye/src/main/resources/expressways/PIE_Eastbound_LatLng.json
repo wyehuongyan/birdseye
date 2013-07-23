@@ -1,0 +1,176 @@
+[
+    {
+        "exit": "40",
+        "name": "Upper Jurong Rd (Benoi Rd), Pasir Laba Rd (SAFTI)",
+        "lat": "1.3339990926455931",
+        "lng": "103.67621392345427"
+    },
+    {
+        "exit": "38",
+        "name": "Pioneer Rd North (Nanyang Technological University, Jurong West Street 91)",
+        "lat": "1.344548020387253",
+        "lng": "103.68847161865233"
+    },
+    {
+        "exit": "36",
+        "name": "Jalan Bahar (Nanyang Technological University, Jurong West Ave 3, Jurong West Ave 5)",
+        "lat": "1.3531394367685645",
+        "lng": "103.6962661180496"
+    },
+    {
+        "exit": "35",
+        "name": "Kranji Expressway (Choa Chu Kang, BKE)",
+        "lat": "1.3609692903674993",
+        "lng": "103.70271951293944"
+    },
+    {
+        "exit": "34",
+        "name": "Jurong West Ave 2 (Corporation Rd)",
+        "lat": "1.3571763730139348",
+        "lng": "103.71479481792448"
+    },
+    {
+        "exit": "31",
+        "name": "Jurong Town Hall Rd, Bukit Batok Rd (Bukit Batok New Town, Jurong East New Town)",
+        "lat": "1.348625192897983",
+        "lng": "103.7346458468437"
+    },
+    {
+        "exit": "30",
+        "name": "Toh Guan Rd (Toh Guan Rd East, Jurong East Central)",
+        "lat": "1.3445145020056009",
+        "lng": "103.74375462865828"
+    },
+    {
+        "exit": "28",
+        "name": "Toh Tuck Ave, Bukit Batok East Ave 3 and Old Toh Tuck Rd",
+        "lat": "1.3368267138495828",
+        "lng": "103.75746071672438"
+    },
+    {
+        "exit": "27",
+        "name": "Clementi Ave 6, Commonwealth Ave West (Clementi New Town) and AYE)",
+        "lat": "1.3344080186254617",
+        "lng": "103.76172542905806"
+    },
+    {
+        "exit": "26B",
+        "name": "Upper Bukit Timah Rd and Jalan Jurong Kechil",
+        "lat": "1.3359874107876724",
+        "lng": "103.77565145826338"
+    },
+    {
+        "exit": "24",
+        "name": "Bukit Timah Expressway (Woodlands) and Dairy Farm Rd",
+        "lat": "1.3485923449389006",
+        "lng": "103.78988795316218"
+    },
+    {
+        "exit": "22",
+        "name": "Eng Neo Ave and Bukit Timah Rd",
+        "lat": "1.34165672309276",
+        "lng": "103.80414992904662"
+    },
+    {
+        "exit": "20B",
+        "name": "MacRitchie Reservoir and Lornie Rd",
+        "lat": "1.3340238963545539",
+        "lng": "103.81320037281512"
+    },
+    {
+        "exit": "19",
+        "name": "Stevens Rd and Bukit Timah Rd",
+        "lat": "1.3272001855104734",
+        "lng": "103.82561833000182"
+    },
+    {
+        "exit": "18",
+        "name": "Onraet Rd",
+        "lat": "1.3259519518572083",
+        "lng": "103.8326926562786"
+    },
+    {
+        "exit": "17D",
+        "name": "Thomson Rd (Balestier Rd, Marymount Rd), Lorong 2 Toa Payoh",
+        "lat": "1.3272276707771586",
+        "lng": "103.83706800973414"
+    },
+    {
+        "exit": "16A",
+        "name": "Kim Keat Link (Toa Payoh)",
+        "lat": "1.329455987479701",
+        "lng": "103.85269724166392"
+    },
+    {
+        "exit": "15",
+        "name": "Central Expressway (Braddell Rd, Ang Mo Kio, SLE), Upper Serangoon Rd, MacPherson Rd and Bendemeer Rd",
+        "lat": "1.3299936255647682",
+        "lng": "103.85922439730166"
+    },
+    {
+        "exit": "13",
+        "name": "Kallang Way, Sims Way, Kallang-Paya Lebar Expressway (TPE)",
+        "lat": "1.325826592159083",
+        "lng": "103.87126885688303"
+    },
+    {
+        "exit": "11",
+        "name": "Paya Lebar Rd, Geylang Rd and Airport Rd",
+        "lat": "1.3223674664354836",
+        "lng": "103.88724543488024"
+    },
+    {
+        "exit": "9",
+        "name": "Jalan Eunos, Eunos Crescent, Eunos Link and Still Rd",
+        "lat": "1.3254283907228546",
+        "lng": "103.9024025980234"
+    },
+    {
+        "exit": "8B",
+        "name": "Bedok North Rd (Bedok Reservoir Rd) and Tampines Ave 10",
+        "lat": "1.3316253095095536",
+        "lng": "103.91760200595854"
+    },
+    {
+        "exit": "8A",
+        "name": "Bedok North Rd (Bedok New Town)",
+        "lat": "1.332102613729701",
+        "lng": "103.9186661723852"
+    },
+    {
+        "exit": "6",
+        "name": "Bedok North Ave 3",
+        "lat": "1.3356227294956322",
+        "lng": "103.93006757235526"
+    },
+    {
+        "exit": "4B",
+        "name": "Tampines Ave 5/Central (Tampines New Town) and Temasek Polytechnic",
+        "lat": "1.3402817970728773",
+        "lng": "103.94526630973814"
+    },
+    {
+        "exit": "4A",
+        "name": "Simei Ave (Simei New Town, Changi General Hospital and Singapore Expo)",
+        "lat": "1.3418062152462866",
+        "lng": "103.9470781419277"
+    },
+    {
+        "exit": "3B",
+        "name": "Tampines Street 31/Ave 2 (Tampines New Town)",
+        "lat": "1.3486064226356702",
+        "lng": "103.95516634321211"
+    },
+    {
+        "exit": "2",
+        "name": "Upper Changi Rd North/East, Tampines Expressway (SLE), Changi Village and Pasir Ris Town",
+        "lat": "1.350681876473698",
+        "lng": "103.96066487169264"
+    },
+    {
+        "exit": "1",
+        "name": "Changi Airport",
+        "lat": "1.3381687937085158",
+        "lng": "103.97720538413523"
+    }
+]

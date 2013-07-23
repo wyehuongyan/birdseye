@@ -1,0 +1,38 @@
+[
+	{
+		"exit": "9",
+        "name": "Seletar Expressway and Turf Club Ave",
+        "lat": "1.4254854984407894",
+        "lng": "103.77094887530802"
+	},
+	{
+		"exit": "7",
+        "name": "Mandai Rd",
+        "lat": "1.412705340734996",
+        "lng": "103.77153829073904"
+	},
+	{
+		"exit": "5",
+        "name": "Kranji Expressway (KJE)",
+        "lat": "1.3966283187415667",
+        "lng": "103.77399854695796"
+	},
+	{
+		"exit": "3",
+        "name": "Bukit Panjang Rd",
+        "lat": "1.3760631383349518",
+        "lng": "103.77714209592341"
+	},
+	{
+		"exit": "2",
+        "name": "Dairy Farm Rd",
+        "lat": "1.368715993791433",
+        "lng": "103.7791939858198"
+	},
+	{
+		"exit": "1",
+        "name": "Pan Island Expressway (Singapore Changi Airport)",
+        "lat": "1.3514655341319681",
+        "lng": "103.79030771887301"
+	}
+]

@@ -1,0 +1,99 @@
+[
+    {
+        "exit": "17",
+        "name": "Central Boulevard",
+        "lat": "1.2754904797743338",
+        "lng": "103.85109864509104"
+    },
+    {
+        "exit": "15",
+        "name": "Rochor Rd",
+        "lat": "1.2881265563634545",
+        "lng": "103.86147745287417"
+    },
+    {
+        "exit": "14",
+        "name": "Kallang-Paya Lebar Expressway",
+        "lat": "1.2954732708358678",
+        "lng": "103.87271456754206"
+    },
+    {
+        "exit": "14A",
+        "name": "Fort Rd",
+        "lat": "1.2956039951001188",
+        "lng": "103.87597948646544"
+    },
+    {
+        "exit": "11",
+        "name": "Tanjong Katong Rd",
+        "lat": "1.2970674360183874",
+        "lng": "103.89706969594954"
+    },
+    {
+        "exit": "10B",
+        "name": "Still Rd South",
+        "lat": "1.3009683767749514",
+        "lng": "103.90826724803446"
+    },
+    {
+        "exit": "10A",
+        "name": "East Coast Park Service Rd",
+        "lat": "1.3015207693422097",
+        "lng": "103.9103271845579"
+    },
+    {
+        "exit": "8B",
+        "name": "Marine Vista to Marine Parade Rd",
+        "lat": "1.3043544608632491",
+        "lng": "103.92028689718245"
+    },
+    {
+        "exit": "8A",
+        "name": "Siglap Rd, Siglap Link to Marine Parade Rd",
+        "lat": "1.305746836625908",
+        "lng": "103.92524160778521"
+    }
+    ,
+    {
+        "exit": "7B",
+        "name": "Bedok South Ave 1 and Marine Parade Rd",
+        "lat": "1.3085175079114877",
+        "lng": "103.93260091876982"
+    }
+    ,
+    {
+        "exit": "7A",
+        "name": "East Coast Park Service Rd",
+        "lat": "1.3091563774836017",
+        "lng": "103.93469304180144"
+    }
+    ,
+    {
+        "exit": "6",
+        "name": "Bayshore Rd",
+        "lat": "1.3103288669672808",
+        "lng": "103.93894367253779"
+    }
+    ,
+    {
+        "exit": "2B",
+        "name": "Xilin Ave",
+        "lat": "1.3227971759205104",
+        "lng": "103.97034094071387"
+    }
+    ,
+    {
+        "exit": "2A",
+        "name": "Changi Coast Rd",
+        "lat": "1.324237808269061",
+        "lng": "103.97131190037726"
+    }
+    ,
+    {
+        "exit": "1",
+        "name": "PIE (Jurong) and TPE (SLE)",
+        "lat": "1.3349992852497152",
+        "lng": "103.97870071566103"
+    }
+
+]

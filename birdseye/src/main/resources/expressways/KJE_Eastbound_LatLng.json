@@ -1,0 +1,26 @@
+[
+    {
+        "exit": "5",
+        "name": "Brickland Rd, Sungei Tengah Rd and Old Choa Chu Kang Rd",
+        "lat": "1.3765142898137432",
+        "lng": "103.72957647180556"
+    },
+    {
+        "exit": "4",
+        "name": "Choa Chu Kang Way and Choa Chu Kang Drive",
+        "lat": "1.384360155646007",
+        "lng": "103.73871408736704"
+    },
+    {
+        "exit": "2",
+        "name": "Woodlands Rd",
+        "lat": "1.3891753217349347",
+        "lng": "103.75253215765952"
+    },
+    {
+        "exit": "1",
+        "name": "Bukit Timah Expressway (Woodlands)",
+        "lat": "1.3905254166619807",
+        "lng": "103.77153091466425"
+    }
+]

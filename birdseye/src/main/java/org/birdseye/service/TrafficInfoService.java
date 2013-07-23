@@ -1,6 +1,7 @@
 package org.birdseye.service;
 
 import java.util.List;
+import org.birdseye.domain.DirectionsResult;
 import org.birdseye.domain.Incident;
 import org.birdseye.domain.TrafficEvent;
 import org.birdseye.repository.IncidentRepository;
@@ -27,6 +28,10 @@ public class TrafficInfoService {
 
     public void insert(final Incident incident, final String collectionName) {
         mongoTemplate.insert(incident, collectionName);
+    }
+
+    public void insert(final DirectionsResult directionsResult) {
+        mongoTemplate.insert(directionsResult, "direction");
     }
 
     // dynamic read for different collections, converts the returned document to the specified entityClass

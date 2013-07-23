@@ -1,0 +1,26 @@
+[
+    {
+        "exit": "2",
+        "name": "Woodlands Rd",
+        "lat": "1.3896868026744935",
+        "lng": "103.76101933753489"
+    },
+    {
+        "exit": "3",
+        "name": "Choa Chu Kang Drive and Choa Chu Kang Way",
+        "lat": "1.3896224485912045",
+        "lng": "103.7490808252096"
+    },
+    {
+        "exit": "5",
+        "name": "Brickland Rd, Sungei Tengah Rd and Old Choa Chu Kang Rd",
+        "lat": "1.381342878967613",
+        "lng": "103.73558461999892"
+    },
+    {
+        "exit": "7",
+        "name": "Pan Island Expressway (Singapore Changi Airport)",
+        "lat": "1.3668195419641342",
+        "lng": "103.71061191296576"
+    }
+]

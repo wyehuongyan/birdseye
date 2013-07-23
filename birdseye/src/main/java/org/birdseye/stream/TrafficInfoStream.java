@@ -1,5 +1,6 @@
 package org.birdseye.stream;
 
+import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -12,8 +13,13 @@ import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 import javax.annotation.PreDestroy;
+import org.birdseye.domain.Expressway;
 import org.birdseye.domain.Incident;
+import org.birdseye.domain.Ramp;
 import org.birdseye.service.TrafficInfoService;
+import org.codehaus.jackson.JsonParseException;
+import org.codehaus.jackson.map.JsonMappingException;
+import org.codehaus.jackson.map.ObjectMapper;
 import org.dom4j.Document;
 import org.dom4j.DocumentException;
 import org.dom4j.Node;
@@ -42,9 +48,15 @@ public final class TrafficInfoStream {
 
     private final Timer timer = new Timer();
 
+    // expressways constants, static and public can be access by TrafficInfoStream.expresswayList
+    public static final ArrayList<Expressway> expresswayList = new ArrayList<Expressway>();
+
     // constructor
     public TrafficInfoStream() {
         System.out.println("TrafficInfoStream constructor executed");
+
+        // initialize expressway json data
+        initExpressways();
 
         // data collection task starts after 5 seconds and occurs every 3 minutes
         timer.scheduleAtFixedRate(new TrafficInfoRetrievalTask(), 5 * 1000, 3 * 60 * 1000); // timertask, when to start, delay between calls in //
@@ -57,6 +69,34 @@ public final class TrafficInfoStream {
 
         timer.cancel();
         timer.purge();
+    }
+
+    private void initExpressways() {
+        // load all the jsons and create arrays of 'ramp' objects for each expressway
+        final URL resource = getClass().getClassLoader().getResource("/expressways");
+        final File directory = new File(resource.getPath());
+        final File[] files = directory.listFiles();
+
+        for (final File file : files) {
+            // System.out.println(file.getPath());
+
+            try {
+                final ObjectMapper om = new ObjectMapper();
+                final Ramp[] ramps = om.readValue(new File(file.getPath()), Ramp[].class);
+
+                final Expressway expressway = new Expressway(file.getName().replace(".json", ""), ramps);
+
+                expresswayList.add(expressway);
+
+            } catch (final JsonParseException e) {
+                e.printStackTrace();
+            } catch (final JsonMappingException e) {
+                e.printStackTrace();
+            } catch (final IOException e) {
+                e.printStackTrace();
+            }
+        }
+
     }
 
     private void cleanUp() {

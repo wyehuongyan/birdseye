@@ -1,0 +1,56 @@
+[
+    {
+        "exit": "2",
+        "name": "Loyang Ave and Tampines Ave 7",
+        "lat": "1.3569739230341629",
+        "lng": "103.96281332111357"
+    },
+    {
+        "exit": "3A",
+        "name": "Tampines Ave 12",
+        "lat": "1.3666284889401867",
+        "lng": "103.94831933414935"
+    },
+    {
+        "exit": "3B",
+        "name": "Elias Rd and Pasir Ris Drive 1",
+        "lat": "1.367041431598238",
+        "lng": "103.94658796823023"
+    },
+    {
+        "exit": "4",
+        "name": "Tampines Link",
+        "lat": "1.3708477406087924",
+        "lng": "103.94119404590128"
+    },
+    {
+        "exit": "5",
+        "name": "Tampines Ave 10 and Pasir Ris Drive 12",
+        "lat": "1.3737953131905143",
+        "lng": "103.93583298063277"
+    },
+    {
+        "exit": "6",
+        "name": "Kallang–Paya Lebar Expressway",
+        "lat": "1.3793733681512956",
+        "lng": "103.92118208444117"
+    },
+    {
+        "exit": "9",
+        "name": "Punggol Rd",
+        "lat": "1.3949222696108614",
+        "lng": "103.90612483358382"
+    },
+    {
+        "exit": "10",
+        "name": "Sengkang East Rd and Punggol Way",
+        "lat": "1.3973087269891986",
+        "lng": "103.90281431710719"
+    },
+    {
+        "exit": "12",
+        "name": "Piccadilly Circus and Jalan Kayu",
+        "lat": "1.4011625823929363",
+        "lng": "103.87619942760466"
+    }
+]

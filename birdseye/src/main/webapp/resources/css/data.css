@@ -10,6 +10,7 @@
     cursor: hand; cursor: pointer;
 }
 
+#congestMapContainer img,
 #simMapContainer img {
   max-width: none;
 }
@@ -103,4 +104,9 @@ circle.hiddenfied {
 
 .ui-datepicker { 
   z-index: 9999 !important;
+}
+
+.bar {
+  fill: steelblue;
+  fill-opacity: .9;
 }

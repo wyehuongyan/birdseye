@@ -73,6 +73,29 @@ function setupFormValidation() {
         }
     });
 
+    // form validation rules
+    $("#congestform").validate({
+        ignore : "",
+        showErrors : function(errorMap, errorList) {
+            $(".errormsg").html($.map(errorList, function(el) {
+                return el.message;
+            }).join("<br>"));
+        },
+
+        rules : {
+            congeststartdatetimepicker : "required",
+            congestenddatetimepicker : "required",
+        },
+        messages : {
+            congeststartdatetimepicker : "Please enter start value",
+            congestenddatetimepicker : "Please enter end value",
+        },
+        submitHandler : function(form) {
+            // form.submit();
+            retrieveCongestion();
+        }
+    });
+
     keepCount();
 }
 

@@ -1,0 +1,62 @@
+[
+    {
+        "exit": "1B",
+        "name": "Chin Swee Rd, Tiong Bahru Rd",
+        "lat": "1.2819080779531655",
+        "lng": "103.83229635989665"
+    },
+    {
+        "exit": "2",
+        "name": "Clemenceau Ave, Merchant Rd and Havelock Rd",
+        "lat": "1.2873737163701247",
+        "lng": "103.84042345321177"
+    },
+    {
+        "exit": "7A",
+        "name": "Moulmein Rd",
+        "lat": "1.3178840032873438",
+        "lng": "103.84963415896891"
+    },
+    {
+        "exit": "7B",
+        "name": "Jalan Bahagia",
+        "lat": "1.323454141916363",
+        "lng": "103.85773979461192"
+    },
+    {
+        "exit": "8B",
+        "name": "PIE (Changi Airport) Upper Serangoon Rd",
+        "lat": "1.3294278318661181",
+        "lng": "103.86220500206946"
+    },
+    {
+        "exit": "10",
+        "name": "Braddell Rd",
+        "lat": "1.3352386074145781",
+        "lng": "103.86215404009818"
+    },
+    {
+        "exit": "11",
+        "name": "Ang Mo Kio Ave 1",
+        "lat": "1.3523356686863186",
+        "lng": "103.85717451906203"
+    },
+    {
+        "exit": "12A",
+        "name": "Ang Mo Kio Ave 3",
+        "lat": "1.3657670742379846",
+        "lng": "103.86000894343852"
+    },
+    {
+        "exit": "12B",
+        "name": "Ang Mo Kio Ave 5",
+        "lat": "1.367972563402235",
+        "lng": "103.86079550123213"
+    },
+    {
+        "exit": "15",
+        "name": "Yio Chu Kang Rd",
+        "lat": "1.3883098930517745",
+        "lng": "103.85810323393343"
+    }
+]

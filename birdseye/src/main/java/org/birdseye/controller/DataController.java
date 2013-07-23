@@ -1,11 +1,24 @@
 package org.birdseye.controller;
 
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import org.birdseye.domain.CongestionResult;
+import org.birdseye.domain.DirectionsResult;
+import org.birdseye.domain.Expressway;
 import org.birdseye.domain.Incident;
+import org.birdseye.domain.Ramp;
 import org.birdseye.domain.Similarity;
 import org.birdseye.domain.Summary;
 import org.birdseye.service.TrafficInfoService;
+import org.birdseye.stream.TrafficInfoStream;
+import org.codehaus.jackson.JsonFactory;
+import org.codehaus.jackson.JsonParseException;
+import org.codehaus.jackson.JsonParser;
+import org.codehaus.jackson.JsonToken;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -19,6 +32,22 @@ public class DataController {
 
     @Autowired
     TrafficInfoService trafficInfoService;
+
+    private static final String[] filters = new String[] { "till", "exit", "entrance", "with" };
+    private static final String[] expressways = new String[] { "BKE", "PIE", "CTE", "KPE", "KJE", "TPE", "ECP", "AYE", "SLE" };
+    private static final Map<String, String> expressMap;
+    static {
+        expressMap = new HashMap<String, String>();
+        expressMap.put("BKE", "Bukit Timah Expressway");
+        expressMap.put("PIE", "Pan Island Expressway");
+        expressMap.put("CTE", "Central Expressway");
+        expressMap.put("KPE", "Kallang-Paya Lebar Expressway");
+        expressMap.put("KJE", "Kranji Expressway");
+        expressMap.put("TPE", "Tampines Expressway");
+        expressMap.put("ECP", "East Coast Parkway");
+        expressMap.put("AYE", "Ayer Rajah Expressway");
+        expressMap.put("SLE", "Seletar Expressway");
+    }
 
     @RequestMapping
     public String getDataPage() {
@@ -43,8 +72,8 @@ public class DataController {
     @RequestMapping(value = "/incidents/between", method = RequestMethod.POST)
     public @ResponseBody
     List<Incident> readByTimestampBetween(@RequestParam final String startTimestamp, @RequestParam final String endTimestamp) {
-        System.out.println("startTimestamp: " + startTimestamp);
-        System.out.println("endTimestamp: " + endTimestamp);
+        // System.out.println("startTimestamp: " + startTimestamp);
+        // System.out.println("endTimestamp: " + endTimestamp);
 
         final List<Incident> betweenIncidents = trafficInfoService.readByTimestampBetween(startTimestamp, endTimestamp);
 
@@ -56,6 +85,345 @@ public class DataController {
         }
 
         return betweenIncidents;
+    }
+
+    @RequestMapping(value = "/incidents/directions", method = RequestMethod.POST)
+    public @ResponseBody
+    Boolean updateDirections(@RequestParam final String directions) {
+        System.out.println("directionResult(s): " + directions);
+
+        final JsonFactory jfactory = new JsonFactory();
+
+        try {
+            final JsonParser jParser = jfactory.createJsonParser(directions);
+
+            DirectionsResult directionsResult = null;
+
+            while (jParser.nextToken() != JsonToken.END_ARRAY) {
+
+                final String fieldname = jParser.getCurrentName();
+
+                // System.out.println("cur fieldname: " + fieldname);
+
+                if ("id".equals(fieldname)) {
+                    jParser.nextToken(); // move to next to get value
+                    System.out.println("incidentId: " + jParser.getText()); // display value
+
+                    directionsResult = new DirectionsResult();
+                    directionsResult.setId(jParser.getText());
+
+                }
+
+                if ("name".equals(fieldname)) {
+                    jParser.nextToken(); // move to next to get value
+                    System.out.println("name: " + jParser.getText()); // display value
+
+                    directionsResult.setName(jParser.getText());
+
+                }
+
+                if ("startTimestamp".equals(fieldname)) {
+                    jParser.nextToken(); // move to next to get value
+                    System.out.println("startTimestamp: " + jParser.getText()); // display value
+
+                    directionsResult.setStartTimestamp(jParser.getText());
+
+                }
+
+                if ("directionsResult".equals(fieldname)) {
+                    jParser.nextToken(); // move to next to get value
+                    System.out.println("directionsResult: " + jParser.getText()); // value
+
+                    directionsResult.setDirectionsResult(jParser.getText());
+
+                    // write directionsResult to the direction collection in the db
+                    trafficInfoService.insert(directionsResult);
+                }
+            }
+
+            jParser.close();
+
+        } catch (final JsonParseException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } catch (final IOException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+
+        return true;
+    }
+
+    @RequestMapping(value = "/incidents/congestion", method = RequestMethod.POST)
+    public @ResponseBody
+    CongestionResult getCongestion(@RequestParam final String startTimestamp, @RequestParam final String endTimestamp) {
+        // System.out.println("startTimestamp: " + startTimestamp);
+        // System.out.println("endTimestamp: " + endTimestamp);
+
+        final List<Incident> betweenIncidents = trafficInfoService.readByTimestampBetween(startTimestamp, endTimestamp);
+        final List<Incident> congestionIncidents = new ArrayList<Incident>();
+        final List<Incident> newCongestionIncidents = new ArrayList<Incident>();
+
+        // extract all incidents with congestion or between as keyword
+        for (final Incident i : betweenIncidents) {
+            if (i.getIncidentMap().containsKey("congestion") || i.getIncidentMap().containsKey("between")) {
+                congestionIncidents.add(i);
+            }
+        }
+
+        // among these congestionIncidents, which are the ones with existing DirectionResult?
+        // remove those that already have existing DirectionResult
+        // and work on those that do not
+        final List<DirectionsResult> existingDirections = new ArrayList<DirectionsResult>();
+
+        for (final Incident c : congestionIncidents) {
+            // retrieve all Direction objects from Directions collection
+            final List<DirectionsResult> directions = trafficInfoService.read("direction", DirectionsResult.class);
+            Boolean exist = false;
+
+            // compare congestionIncidents' ID with Direction ID
+            for (final DirectionsResult dr : directions) {
+                if ((c.getId().equals(dr.getId()))) {
+                    exist = true;
+
+                    // add to special array for later use
+                    existingDirections.add(dr);
+
+                    break;
+                }
+            }
+
+            if (!exist) {
+                // those incidents that are not in the directions collection will be processed
+                newCongestionIncidents.add(c);
+            }
+        }
+
+        // processing of incidents not in directions collection starts here
+        int count = 0;
+        final List<Expressway> expresswayList = new ArrayList<Expressway>();
+
+        // check congestionIncident with expressways' ramps to retrieve point to point info
+        for (final Incident c : newCongestionIncidents) {
+            String location1 = "";
+            String location2 = "";
+            String timestamp = "";
+
+            // narrow down to which expressway
+            final Object on = c.getIncidentMap().get("on");
+            final Object at = c.getIncidentMap().get("at");
+
+            if (c.getIncidentMap().containsKey("congestion")) {
+                final Object congestion = c.getIncidentMap().get("congestion");
+                final Object before = c.getIncidentMap().get("before");
+                final Object after = c.getIncidentMap().get("after");
+
+                // System.out.println("message: " + c.getMessage());
+                // System.out.println("before:" + before);
+                // System.out.println("after:" + after);
+                // System.out.println("at:" + at);
+                // System.out.println("congestion:" + congestion);
+
+                // filter and form process
+                // for "before" and after
+                if (before != null || after != null) {
+                    if (before != null) {
+                        for (final String s : (ArrayList<String>)before) {
+                            if (Arrays.asList(filters).contains(s.toLowerCase())) {
+                                // if contains do nth
+                            } else {
+                                if (s.equalsIgnoreCase("avenue")) {
+                                    location1 += " " + "Ave";
+                                } else if (s.equalsIgnoreCase("road")) {
+                                    location1 += " " + "Rd";
+                                } else if (Arrays.asList(expressways).contains(s)) {
+                                    // check for expressway short form and expand to long form
+                                    // BKE = Bukit Timah Expressway
+                                    location1 += " " + expressMap.get(s);
+                                } else {
+                                    // form the word
+                                    location1 += " " + s;
+                                }
+                            }
+                        }
+                    } else if (after != null) {
+                        for (final String s : (ArrayList<String>)after) {
+                            if (Arrays.asList(filters).contains(s.toLowerCase())) {
+                                // if contains do nth
+                            } else {
+                                if (s.equalsIgnoreCase("avenue")) {
+                                    location1 += " " + "Ave";
+                                } else if (s.equalsIgnoreCase("road")) {
+                                    location1 += " " + "Rd";
+                                } else if (Arrays.asList(expressways).contains(s)) {
+                                    // check for expressway short form and expand to long form
+                                    // BKE = Bukit Timah Expressway
+                                    location1 += " " + expressMap.get(s);
+                                } else {
+                                    // form the word
+                                    location1 += " " + s;
+                                }
+                            }
+                        }
+                    }
+
+                    // for "congestion"
+                    for (final String s : (ArrayList<String>)congestion) {
+                        if (Arrays.asList(filters).contains(s.toLowerCase())) {
+                            // if contains do nth
+                        } else {
+                            if (s.equalsIgnoreCase("avenue")) {
+                                location2 += " " + "Ave";
+                            } else if (s.equalsIgnoreCase("road")) {
+                                location2 += " " + "Rd";
+                            } else if (Arrays.asList(expressways).contains(s)) {
+                                // check for expressway short form and expand to long form
+                                // BKE = Bukit Timah Expressway
+                                location2 += " " + expressMap.get(s);
+                            } else {
+                                // form the word
+                                location2 += " " + s;
+                            }
+                        }
+                    }
+
+                    location1 = location1.substring(1);
+                    location2 = location2.substring(1);
+                    timestamp = c.getStartTimestamp();
+
+                    // System.out.println("location1: " + location1 + ", length: " + location1.length());
+                    // System.out.println("location2: " + location2 + ", length: " + location2.length());
+
+                }
+            } else if (c.getIncidentMap().containsKey("between")) {
+                // keyword "between"
+                final Object between = c.getIncidentMap().get("between");
+
+                for (final String s : ((ArrayList<String>)between)) {
+                    if (Arrays.asList(filters).contains(s.toLowerCase())) {
+                        // if contains do nth
+                    } else {
+                        if (s.equalsIgnoreCase("avenue")) {
+                            location1 += " " + "Ave";
+                        } else if (s.equalsIgnoreCase("road")) {
+                            location1 += " " + "Rd";
+                        } else if (Arrays.asList(expressways).contains(s)) {
+                            // check for expressway short form and expand to long form
+                            // BKE = Bukit Timah Expressway
+                            location1 += " " + expressMap.get(s);
+                        } else {
+                            location1 += " " + s;
+                        }
+                    }
+                }
+
+                // keyword "and" is the delimiter
+                final String[] locations = location1.split(" and ");
+
+                location1 = locations[0].substring(1);
+                location2 = locations[1];
+                timestamp = c.getStartTimestamp();
+
+                System.out.println("location1: " + location1);
+                System.out.println("location2: " + location2);
+            }
+
+            // compare with TrafficInfoStream.expresswayList
+            // for highest number of matched words with ramp
+            // there must be two ramp matches before expressway is accepted
+            for (final Expressway e : TrafficInfoStream.expresswayList) {
+                Boolean validLocation1 = false;
+                Boolean validLocation2 = false;
+
+                final Ramp[] ramps = new Ramp[2];
+                Ramp ramp1 = null;
+                Ramp ramp2 = null;
+
+                // System.out.println(e.getName());
+
+                if (on != null) {
+                    // on is not null, directly select the expressway who's name startswith "on" val
+                    if (e.getName().startsWith((String)((ArrayList)on).get(0))) {
+                        // System.out.println("on size: " + ((ArrayList)on).size());
+                        for (final Ramp r : e.getRamps()) {
+                            if (org.apache.commons.lang.StringUtils.containsIgnoreCase(r.getName(), location1)) {
+                                if (!validLocation2 && !validLocation1) {
+                                    // System.out.println(String.format("on Matched 1: %s - %s", r.getName(), location1));
+                                    // order matters, 1 then 2
+                                    // no overwriting
+                                    validLocation1 = true;
+
+                                    ramp1 = r;
+                                }
+                            }
+
+                            if (org.apache.commons.lang.StringUtils.containsIgnoreCase(r.getName(), location2)) {
+                                if (validLocation1 && !validLocation2) {
+                                    // System.out.println(String.format("on Matched 2: %s - %s", r.getName(), location2));
+                                    validLocation2 = true;
+
+                                    ramp2 = r;
+                                }
+                            }
+                        }
+                    }
+                } else {
+                    // on is null, go through all expressways
+                    for (final Ramp r : e.getRamps()) {
+                        if (org.apache.commons.lang.StringUtils.containsIgnoreCase(r.getName(), location1)) {
+                            if (!validLocation2 && !validLocation1) {
+                                // System.out.println(String.format("Matched 1: %s - %s", r.getName(), location1));
+                                // order matters, 1 then 2
+                                // no overwriting
+                                validLocation1 = true;
+
+                                ramp1 = r;
+                            }
+                        }
+
+                        if (org.apache.commons.lang.StringUtils.containsIgnoreCase(r.getName(), location2)) {
+                            if (validLocation1 && !validLocation2) {
+                                // System.out.println(String.format("Matched 2: %s - %s", r.getName(), location2));
+                                validLocation2 = true;
+
+                                ramp2 = r;
+                            }
+                        }
+                    }
+                }
+
+                // increase matchcount only when there are two ramps matched in one expressway
+                if (validLocation1 == true && validLocation2 == true) {
+                    if (ramp1.getName() != ramp2.getName()) {
+                        // System.out.println("Expressway valid! " + e.getName());
+                        // System.out.println("Expressway valid! " + c.getMessage());
+                        count++;
+
+                        // add ramps into ramp array
+                        ramps[0] = ramp1;
+                        ramps[1] = ramp2;
+
+                        final Expressway expressway = new Expressway();
+                        expressway.setIncidentId(c.getId());
+                        expressway.setName(e.getName());
+                        expressway.setRamps(ramps);
+                        expressway.setStartTimestamp(timestamp);
+
+                        expresswayList.add(expressway);
+                    }
+                }
+            }
+        }
+
+        System.out.println("Final count " + count);
+        System.out.println("expresswayList size: " + expresswayList.size());
+
+        // add directionResultList and expresswayList into CongestionResult object
+        final CongestionResult congestionResult = new CongestionResult();
+        congestionResult.setDirectionsResults(existingDirections);
+        congestionResult.setExpressways(expresswayList);
+
+        return congestionResult;
     }
 
     // Correlation method using Cosine Similarity
