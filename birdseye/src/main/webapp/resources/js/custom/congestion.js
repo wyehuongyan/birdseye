@@ -1,5 +1,6 @@
 var directionsService;
 var expresswaysData;
+var congMap;
 
 // add startswith function to the String prototype
 if (typeof String.prototype.startsWith != 'function') {
@@ -85,7 +86,7 @@ function initCongMiniMap() {
         },
     };
 
-    map = new google.maps.Map(document.getElementById("congestMapContainer"), myOptions);
+    congMap = new google.maps.Map(document.getElementById("congestMapContainer"), myOptions);
 
     var styledMapOptions = {
         name : 'Congestion'
@@ -93,7 +94,7 @@ function initCongMiniMap() {
 
     var customMapType = new google.maps.StyledMapType(featureOpts, styledMapOptions);
 
-    map.mapTypes.set(MY_MAPTYPE_ID, customMapType);
+    congMap.mapTypes.set(MY_MAPTYPE_ID, customMapType);
 
     directionsService = new google.maps.DirectionsService();
 }
@@ -235,7 +236,7 @@ function plotDirectionsResults(data) {
             strokeWeight : 4
         });
 
-        polyline.setMap(map);
+        polyline.setMap(congMap);
     });
 }
 
@@ -338,7 +339,7 @@ function plotCongestions(data) {
             preserveViewport : true
         });
 
-        directionsDisplay.setMap(map);
+        directionsDisplay.setMap(congMap);
 
         var request = {
             origin : start,
@@ -901,7 +902,7 @@ function initLineChart(data) {
                                 zIndex : 100
                             });
 
-                            polyline.setMap(map);
+                            polyline.setMap(congMap);
 
                             return;
                         }
