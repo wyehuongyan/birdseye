@@ -89,8 +89,10 @@ public class DataController {
 
     @RequestMapping(value = "/incidents/directions", method = RequestMethod.POST)
     public @ResponseBody
-    Boolean updateDirections(@RequestParam final String directions) {
+    List<DirectionsResult> updateDirections(@RequestParam final String directions) {
         System.out.println("directionResult(s): " + directions);
+
+        final List<DirectionsResult> directionsResults = new ArrayList<DirectionsResult>();
 
         final JsonFactory jfactory = new JsonFactory();
 
@@ -138,6 +140,8 @@ public class DataController {
 
                     // write directionsResult to the direction collection in the db
                     trafficInfoService.insert(directionsResult);
+
+                    directionsResults.add(directionsResult);
                 }
             }
 
@@ -151,7 +155,7 @@ public class DataController {
             e.printStackTrace();
         }
 
-        return true;
+        return directionsResults;
     }
 
     @RequestMapping(value = "/incidents/congestion", method = RequestMethod.POST)

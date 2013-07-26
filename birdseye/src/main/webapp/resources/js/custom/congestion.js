@@ -1,4 +1,13 @@
 var directionsService;
+var expresswaysData;
+
+// add startswith function to the String prototype
+if (typeof String.prototype.startsWith != 'function') {
+    // see below for better implementation!
+    String.prototype.startsWith = function(str) {
+        return this.indexOf(str) == 0;
+    };
+}
 
 function initializeCongUI() {
     // hard code data limits from 27th May 2013 till current day
@@ -100,11 +109,21 @@ function retrieveCongestion() {
         endTimestamp : $('#congestenddatetimepicker').datetimepicker('getDate').getTime() + 28800000
     }, function(response) {
         if (response != null) {
-            console.log(response);
+            // console.log(response);
+            $("#congestMapContainer").css("border-style", "solid");
+            $("#congestMapContainer").css("border-width", "2px");
+            $("#congestMapContainer").css("border-color", "gray");
+            $("#congTableDiv").css("display", "block");
+
             initCongMiniMap();
 
             $("#congestRetrieveButton").button('reset');
             $('#loadingModal').modal('hide');
+
+            expresswaysData = response;
+
+            // bin data
+            binExpressway(response);
 
             // count the no. of congestions per expressway for bar chart display
             countExpressway(response);
@@ -139,14 +158,6 @@ function countExpressway(data) {
     expresswayCount[6].name = "KJE";
     expresswayCount[7].name = "KPE";
     expresswayCount[8].name = "CTE";
-
-    // add startswith function to the String prototype
-    if (typeof String.prototype.startsWith != 'function') {
-        // see below for better implementation!
-        String.prototype.startsWith = function(str) {
-            return this.indexOf(str) == 0;
-        };
-    }
 
     // loop through and obtain no. of congestions per expressway
     $.each(directionResults, function(index, dr) {
@@ -198,7 +209,6 @@ function countExpressway(data) {
     });
 
     initBarChart(expresswayCount);
-    initLineChart();
 }
 
 function plotDirectionsResults(data) {
@@ -373,7 +383,29 @@ function updateDirections(directionsArray) {
         directions : JSON.stringify(directionsArray)
     }, function(response) {
         if (response != null) {
-            console.log("DB directions updated: " + response);
+            console.log("updated directionResults:");
+            console.log(response);
+
+            if (response.length != 0) {
+                $.each(response, function(index, key) {
+                    // check expresswaysData.directionResults
+                    // if exist dun add, else add
+
+                    var exist = false;
+
+                    $.each(expresswaysData.directionResults, function(index, dr) {
+                        if (dr.id == key.id) {
+                            exist = true;
+
+                            return;
+                        }
+                    });
+
+                    if (!exist) {
+                        expresswaysData.directionResults.push(key);
+                    }
+                });
+            }
         }
     });
 }
@@ -386,7 +418,9 @@ function initBarChart(data) {
         right : 20,
         bottom : 50,
         left : 40
-    }, width = 650 - margin.left - margin.right, height = 500 - margin.top - margin.bottom;
+    }, width = 700 - margin.left - margin.right, height = 500 - margin.top - margin.bottom;
+
+    var color = d3.scale.category10();
 
     var x = d3.scale.ordinal().rangeRoundBands([ 0, width ], .1, 1);
 
@@ -409,7 +443,7 @@ function initBarChart(data) {
     svg.append("g").attr("class", "x axis").attr("transform", "translate(0," + height + ")").call(xAxis);
 
     svg.append("g").attr("class", "y axis").call(yAxis).append("text").attr("transform", "rotate(-90)").attr("y", 6).attr("dy", ".71em").style(
-            "text-anchor", "end").text("Congestions");
+            "text-anchor", "end").text("Congestion");
 
     svg.selectAll(".bar").data(data).enter().append("rect").attr("class", "bar").attr("x", function(d) {
         return x(d.name);
@@ -417,6 +451,8 @@ function initBarChart(data) {
         return y(d.count);
     }).attr("height", function(d) {
         return height - y(d.count);
+    }).attr("fill", function(d) {
+        return color(d.name);
     });
 
     d3.select("input").on("change", change);
@@ -450,92 +486,435 @@ function initBarChart(data) {
 
 }
 
+function binExpressway(data) {
+    var expressways = data.expressways;
+    var directionResults = data.directionResults;
+
+    // binning method
+    var expresswayArray = new Array();
+
+    for ( var i = 0; i < 24; i++) {
+        var expresswayObj = new Object();
+        expresswayObj.PIE = 0;
+        expresswayObj.BKE = 0;
+        expresswayObj.AYE = 0;
+        expresswayObj.SLE = 0;
+        expresswayObj.TPE = 0;
+        expresswayObj.ECP = 0;
+        expresswayObj.KJE = 0;
+        expresswayObj.KPE = 0;
+        expresswayObj.CTE = 0;
+
+        var iString = i.toString();
+
+        if (i < 10) {
+            iString = "0" + iString;
+        }
+
+        expresswayObj.hour = iString;
+        expresswayObj.data = new Array();
+        expresswayArray.push(expresswayObj);
+    }
+
+    $.each(expressways, function(index, e) {
+        var expresswayName = e.name;
+
+        if ((expresswayName).startsWith("PIE")) {
+            var congestion = new Object();
+            congestion.startTimestamp = e.startTimestamp;
+            congestion.incidentId = e.incidentId;
+            congestion.name = "PIE";
+
+            var date = new Date(parseInt(congestion.startTimestamp));
+            var hours = parseInt(date.getHours());
+
+            expresswayArray[hours].PIE++;
+            expresswayArray[hours].data.push(congestion);
+        } else if ((expresswayName).startsWith("BKE")) {
+            var congestion = new Object();
+            congestion.startTimestamp = e.startTimestamp;
+            congestion.incidentId = e.incidentId;
+            congestion.name = "BKE";
+
+            var date = new Date(parseInt(congestion.startTimestamp));
+            var hours = parseInt(date.getHours());
+
+            expresswayArray[hours].BKE++;
+            expresswayArray[hours].data.push(congestion);
+        } else if ((expresswayName).startsWith("AYE")) {
+            var congestion = new Object();
+            congestion.startTimestamp = e.startTimestamp;
+            congestion.incidentId = e.incidentId;
+            congestion.name = "AYE";
+
+            var date = new Date(parseInt(congestion.startTimestamp));
+            var hours = parseInt(date.getHours());
+
+            expresswayArray[hours].AYE++;
+            expresswayArray[hours].data.push(congestion);
+        } else if ((expresswayName).startsWith("SLE")) {
+            var congestion = new Object();
+            congestion.startTimestamp = e.startTimestamp;
+            congestion.incidentId = e.incidentId;
+            congestion.name = "SLE";
+
+            var date = new Date(parseInt(congestion.startTimestamp));
+            var hours = parseInt(date.getHours());
+
+            expresswayArray[hours].SLE++;
+            expresswayArray[hours].data.push(congestion);
+        } else if ((expresswayName).startsWith("TPE")) {
+            var congestion = new Object();
+            congestion.startTimestamp = e.startTimestamp;
+            congestion.incidentId = e.incidentId;
+            congestion.name = "TPE";
+
+            var date = new Date(parseInt(congestion.startTimestamp));
+            var hours = parseInt(date.getHours());
+
+            expresswayArray[hours].TPE++;
+            expresswayArray[hours].data.push(congestion);
+        } else if ((expresswayName).startsWith("ECP")) {
+            var congestion = new Object();
+            congestion.startTimestamp = e.startTimestamp;
+            congestion.incidentId = e.incidentId;
+            congestion.name = "ECP";
+
+            var date = new Date(parseInt(congestion.startTimestamp));
+            var hours = parseInt(date.getHours());
+
+            expresswayArray[hours].ECP++;
+            expresswayArray[hours].data.push(congestion);
+        } else if ((expresswayName).startsWith("KJE")) {
+            var congestion = new Object();
+            congestion.startTimestamp = e.startTimestamp;
+            congestion.incidentId = e.incidentId;
+            congestion.name = "KJE";
+
+            var date = new Date(parseInt(congestion.startTimestamp));
+            var hours = parseInt(date.getHours());
+
+            expresswayArray[hours].KJE++;
+            expresswayArray[hours].data.push(congestion);
+        } else if ((expresswayName).startsWith("KPE")) {
+            var congestion = new Object();
+            congestion.startTimestamp = e.startTimestamp;
+            congestion.incidentId = e.incidentId;
+            congestion.name = "KPE";
+
+            var date = new Date(parseInt(congestion.startTimestamp));
+            var hours = parseInt(date.getHours());
+
+            expresswayArray[hours].KPE++;
+            expresswayArray[hours].data.push(congestion);
+        } else if ((expresswayName).startsWith("CTE")) {
+            var congestion = new Object();
+            congestion.startTimestamp = e.startTimestamp;
+            congestion.incidentId = e.incidentId;
+            congestion.name = "CTE";
+
+            var date = new Date(parseInt(congestion.startTimestamp));
+            var hours = parseInt(date.getHours());
+
+            expresswayArray[hours].CTE++;
+            expresswayArray[hours].data.push(congestion);
+        }
+    });
+
+    // for directionResults
+    $.each(directionResults, function(index, dr) {
+        var expresswayName = dr.name;
+
+        if ((expresswayName).startsWith("PIE")) {
+            var congestion = new Object();
+            congestion.startTimestamp = dr.startTimestamp;
+            congestion.incidentId = dr.id;
+            congestion.name = "PIE";
+
+            var date = new Date(parseInt(congestion.startTimestamp));
+            var hours = parseInt(date.getHours());
+
+            expresswayArray[hours].PIE++;
+            expresswayArray[hours].data.push(congestion);
+        } else if ((expresswayName).startsWith("BKE")) {
+            var congestion = new Object();
+            congestion.startTimestamp = dr.startTimestamp;
+            congestion.incidentId = dr.id;
+            congestion.name = "BKE";
+
+            var date = new Date(parseInt(congestion.startTimestamp));
+            var hours = parseInt(date.getHours());
+
+            expresswayArray[hours].BKE++;
+            expresswayArray[hours].data.push(congestion);
+        } else if ((expresswayName).startsWith("AYE")) {
+            var congestion = new Object();
+            congestion.startTimestamp = dr.startTimestamp;
+            congestion.incidentId = dr.id;
+            congestion.name = "AYE";
+
+            var date = new Date(parseInt(congestion.startTimestamp));
+            var hours = parseInt(date.getHours());
+
+            expresswayArray[hours].AYE++;
+            expresswayArray[hours].data.push(congestion);
+        } else if ((expresswayName).startsWith("SLE")) {
+            var congestion = new Object();
+            congestion.startTimestamp = dr.startTimestamp;
+            congestion.incidentId = dr.id;
+            congestion.name = "SLE";
+
+            var date = new Date(parseInt(congestion.startTimestamp));
+            var hours = parseInt(date.getHours());
+
+            expresswayArray[hours].SLE++;
+            expresswayArray[hours].data.push(congestion);
+        } else if ((expresswayName).startsWith("TPE")) {
+            var congestion = new Object();
+            congestion.startTimestamp = dr.startTimestamp;
+            congestion.incidentId = dr.id;
+            congestion.name = "TPE";
+
+            var date = new Date(parseInt(congestion.startTimestamp));
+            var hours = parseInt(date.getHours());
+
+            expresswayArray[hours].TPE++;
+            expresswayArray[hours].data.push(congestion);
+        } else if ((expresswayName).startsWith("ECP")) {
+            var congestion = new Object();
+            congestion.startTimestamp = dr.startTimestamp;
+            congestion.incidentId = dr.id;
+            congestion.name = "ECP";
+
+            var date = new Date(parseInt(congestion.startTimestamp));
+            var hours = parseInt(date.getHours());
+
+            expresswayArray[hours].ECP++;
+            expresswayArray[hours].data.push(congestion);
+        } else if ((expresswayName).startsWith("KJE")) {
+            var congestion = new Object();
+            congestion.startTimestamp = dr.startTimestamp;
+            congestion.incidentId = dr.id;
+            congestion.name = "KJE";
+
+            var date = new Date(parseInt(congestion.startTimestamp));
+            var hours = parseInt(date.getHours());
+
+            expresswayArray[hours].KJE++;
+            expresswayArray[hours].data.push(congestion);
+        } else if ((expresswayName).startsWith("KPE")) {
+            var congestion = new Object();
+            congestion.startTimestamp = dr.startTimestamp;
+            congestion.incidentId = dr.id;
+            congestion.name = "KPE";
+
+            var date = new Date(parseInt(congestion.startTimestamp));
+            var hours = parseInt(date.getHours());
+
+            expresswayArray[hours].KPE++;
+            expresswayArray[hours].data.push(congestion);
+        } else if ((expresswayName).startsWith("CTE")) {
+            var congestion = new Object();
+            congestion.startTimestamp = dr.startTimestamp;
+            congestion.incidentId = dr.id;
+            congestion.name = "CTE";
+
+            var date = new Date(parseInt(congestion.startTimestamp));
+            var hours = parseInt(date.getHours());
+
+            expresswayArray[hours].CTE++;
+            expresswayArray[hours].data.push(congestion);
+        }
+    });
+
+    // console.log("expresswayArray: ");
+    // console.log(expresswayArray);
+
+    // initialize the line chart with expresswayArray
+    initLineChart(expresswayArray);
+}
+
 function initLineChart(data) {
+    $('.congLineContentInner').remove();
+
     var margin = {
         top : 20,
         right : 80,
         bottom : 30,
         left : 30
-    }, width = 1350 - margin.left - margin.right, height = 400 - margin.top - margin.bottom;
-
-    var parseDate = d3.time.format("%Y%m%d").parse;
+    }, width = 1240 - margin.left - margin.right, height = 400 - margin.top - margin.bottom;
 
     var x = d3.time.scale().range([ 0, width ]);
 
     var y = d3.scale.linear().range([ height, 0 ]);
 
+    var parseDate = d3.time.format("%H").parse;
+
     var color = d3.scale.category10();
 
-    var xAxis = d3.svg.axis().scale(x).orient("bottom");
+    var xAxis = d3.svg.axis().scale(x).orient("bottom").ticks(24);
 
     var yAxis = d3.svg.axis().scale(y).orient("left");
 
-    var line = d3.svg.line().interpolate("basis").x(function(d) {
-        return x(d.date);
+    var line = d3.svg.line().interpolate("monotone").x(function(d) {
+        // console.log(d);
+        return x(d.hour);
     }).y(function(d) {
-        return y(d.temperature);
+        // console.log(d);
+        return y(d.congestion);
     });
 
-    var svg = d3.select("#d3Linechart").append("svg").attr("width", width + margin.left + margin.right).attr("height",
-            height + margin.top + margin.bottom).append("g").attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+    function xx(d) {
+        // console.log("xx d: " + d);
+        // console.log("x(d.hour): " + x(d.hour));
+        return x(d.hour);
+    }
 
-    d3.tsv("resources/data.tsv", function(error, data) {
-        color.domain(d3.keys(data[0]).filter(function(key) {
-            return key !== "date";
-        }));
+    function yy(d) {
+        // console.log("yy d: " + d);
+        // console.log("y(d.congestion): " + y(d.congestion));
+        return y(d.congestion);
+    }
 
-        data.forEach(function(d) {
-            d.date = parseDate(d.date);
+    var svg = d3.select("#d3Linechart").append("svg").attr("class", "congLineContentInner").attr("width", width + margin.left + margin.right).attr(
+            "height", height + margin.top + margin.bottom).append("g").attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+    color.domain(d3.keys(data[0]).filter(function(key) {
+        return (key !== "hour" && key !== "data");
+    }));
+
+    data.forEach(function(d) {
+        // console.log(d);
+        d.hour = parseDate(d.hour);
+    });
+
+    var expressways = color.domain().map(function(name) {
+        return {
+            name : name,
+            values : data.map(function(d) {
+                return {
+                    hour : d.hour,
+                    congestion : +d[name],
+                    data : d.data.filter(function(d) {
+                        return d.name == name;
+                    })
+                };
+            })
+        };
+    });
+
+    // console.log(data);
+    // console.log(expressways);
+
+    x.domain(d3.extent(data, function(d) {
+        return d.hour;
+    }));
+
+    y.domain([ d3.min(expressways, function(e) {
+        return d3.min(e.values, function(v) {
+            return v.congestion;
         });
-
-        var cities = color.domain().map(function(name) {
-            return {
-                name : name,
-                values : data.map(function(d) {
-                    return {
-                        date : d.date,
-                        temperature : +d[name]
-                    };
-                })
-            };
+    }), d3.max(expressways, function(e) {
+        return d3.max(e.values, function(v) {
+            return v.congestion;
         });
+    }) ]);
 
-        x.domain(d3.extent(data, function(d) {
-            return d.date;
-        }));
+    svg.append("g").attr("class", "x axis").attr("transform", "translate(0," + height + ")").call(xAxis);
 
-        y.domain([ d3.min(cities, function(c) {
-            return d3.min(c.values, function(v) {
-                return v.temperature;
-            });
-        }), d3.max(cities, function(c) {
-            return d3.max(c.values, function(v) {
-                return v.temperature;
-            });
-        }) ]);
+    svg.append("g").attr("class", "y axis").call(yAxis).append("text").attr("transform", "rotate(-90)").attr("y", 6).attr("dy", ".71em").style(
+            "text-anchor", "end").text("Congestion");
 
-        svg.append("g").attr("class", "x axis").attr("transform", "translate(0," + height + ")").call(xAxis);
+    var expressway = svg.selectAll(".expressway").data(expressways).enter().append("g").attr("class", "expressway");
 
-        svg.append("g").attr("class", "y axis").call(yAxis).append("text").attr("transform", "rotate(-90)").attr("y", 6).attr("dy", ".71em").style(
-                "text-anchor", "end").text("Temperature (ºF)");
+    expressway.append("path").attr("class", "line").attr("d", function(d) {
+        return line(d.values);
+    }).style("stroke", function(d) {
+        return color(d.name);
+    });
 
-        var city = svg.selectAll(".city").data(cities).enter().append("g").attr("class", "city");
+    var circlePosArray = new Array();
 
-        city.append("path").attr("class", "line").attr("d", function(d) {
-            return line(d.values);
-        }).style("stroke", function(d) {
-            return color(d.name);
-        });
+    $.each(expressways, function(index, expressway) {
+        $.each(expressway.values, function(index, val) {
+            // console.log(val);
 
-        city.append("text").datum(function(d) {
-            return {
-                name : d.name,
-                value : d.values[d.values.length - 1]
-            };
-        }).attr("transform", function(d) {
-            return "translate(" + x(d.value.date) + "," + y(d.value.temperature) + ")";
-        }).attr("x", 3).attr("dy", ".35em").text(function(d) {
-            return d.name;
+            if (val.congestion != 0) {
+                circlePosArray.push(val);
+            }
         });
     });
+
+    svg.selectAll("circle").data(circlePosArray).enter().append("circle").attr("style", "cursor:hand;").attr("stroke", "gray").style("stroke-width",
+            "1").attr("fill", "#E5E4E2").attr("r", 4).attr("cx", function(d) {
+        // console.log("xx: " + xx(d));
+        return xx(d);
+    }).attr("cy", function(d) {
+        // console.log("yy: " + yy(d));
+        return yy(d);
+    }).on(
+            "mousedown",
+            function(d) {
+                console.log(d.data);
+                // clear table first
+                $('.congRow').remove();
+
+                var htmlString = "";
+
+                for ( var i = 0; i < d.data.length; i++) {
+                    htmlString += "<tr class='congRow' id='congRow" + (i + 1) + "'>" + "<td>" + (i + 1) + "</td>" + "<td class='congMsg' id='congRow"
+                            + (i + 1) + "'>" + (d.data[i].name + " C-" + (i + 1)) + "</td>" + "</tr>";
+                }
+
+                $('#congTable tr:last').after(htmlString);
+
+                var polyline = null;
+
+                $('#congTable > tbody > tr > .congMsg').mouseover(function() {
+                    // mouse is over row n
+                    // console.log(d.data[((this.id).replace(/^\D+/g, '') -
+                    // 1)].incidentId);
+
+                    var incidentId = d.data[((this.id).replace(/^\D+/g, '') - 1)].incidentId;
+
+                    $.each(expresswaysData.directionResults, function(index, dr) {
+                        if (dr.id == incidentId) {
+                            var directionsResult = JSON.parse(dr.directionsResult);
+
+                            // "overview_path" to plot polyline
+                            var paths = directionsResult.routes[0].overview_path;
+                            var overview_path = new Array();
+
+                            $.each(paths, function(index, pathObj) {
+                                // create a new google latlng object for each
+                                // pair of jb kb values
+                                var overviewlatlng = new google.maps.LatLng(pathObj.jb, pathObj.kb);
+
+                                overview_path.push(overviewlatlng);
+                            });
+
+                            polyline = new google.maps.Polyline({
+                                path : overview_path,
+                                strokeColor : '#00FF00',
+                                strokeOpacity : 0.7,
+                                strokeWeight : 4,
+                                zIndex : 100
+                            });
+
+                            polyline.setMap(map);
+
+                            return;
+                        }
+                    });
+
+                });
+
+                $('#congTable > tbody > tr > .congMsg').mouseout(function() {
+                    if (polyline != null) {
+                        polyline.setMap(null);
+                    }
+                });
+
+            });
+
 }

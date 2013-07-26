@@ -386,7 +386,7 @@
            <div class="congestContent">
             <div class="span6">
               <H3 id="congestLabel">Congestion Analysis</H3>
-              <div id="congestMapContainer" style="height: 400px; border-style:solid; border-width:2px; border-color: gray"></div>
+              <div id="congestMapContainer" style="height: 400px;"></div>
             </div>
             <div class="span6">
               <div id="d3Barchart"></div>
@@ -452,7 +452,19 @@
           </div>
           
           <div class="congestContent">
-            <div id="d3Linechart"></div>
+            <div class="span10">
+                <div id="d3Linechart"></div>
+            </div>
+            <div id="congTableDiv" style="display:none;" class="span2">
+            <p>Mouseover row to highlight route on map</p>
+                <table id="congTable" class="table table-hover table-condensed">
+                <tr>
+                    <th>#</th>
+                    <th>Congestion</th>
+                </tr>
+                
+                </table>
+            </div>
           </div>
         </div>
       </div>
