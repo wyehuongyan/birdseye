@@ -1047,6 +1047,7 @@ function initLineChart(data) {
     });
 
     var circlePosArray = new Array();
+    var div = d3.select("body").append("div").attr("id", "focus").attr("class", "tooltip").style("opacity", 0);
 
     $.each(expressways, function(index, expressway) {
         $.each(expressway.values, function(index, val) {
@@ -1132,6 +1133,13 @@ function initLineChart(data) {
                     }
                 });
 
-            });
+            }).on("mouseover", function(d) {
+        div.transition().duration(500).style("opacity", 1);
+    }).on("mousemove", function(d) {
+        div.html("<br>" + d.congestion).style("left", (d3.event.pageX - 34) + "px").style("top", (d3.event.pageY - 24) + "px");
+    }).on("mouseout", function(d) {
+        div.transition().duration(500).style("opacity", 1e-6);
+    });
+    ;
 
 }
