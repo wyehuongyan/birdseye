@@ -1,6 +1,10 @@
 var directionsService;
 var expresswaysData;
+var dayArray = new Array();
+var dayExpresswayArray = new Array();
+var polyLineArray = new Array();
 var congMap;
+var routeColor = "#FF0000"
 
 // add startswith function to the String prototype
 if (typeof String.prototype.startsWith != 'function') {
@@ -8,6 +12,27 @@ if (typeof String.prototype.startsWith != 'function') {
     String.prototype.startsWith = function(str) {
         return this.indexOf(str) == 0;
     };
+}
+
+function toggleDaysAll(source) {
+    checkboxes = document.getElementsByName("dataCongestDay");
+
+    for ( var i = 0, n = checkboxes.length; i < n; i++) {
+        checkboxes[i].checked = source.checked;
+    }
+
+    concatDays(dayExpresswayArray);
+    filterPolyLine();
+}
+
+function toggleExpresswaysAll(source) {
+    checkboxes = document.getElementsByName("dataCongestExpressway");
+
+    for ( var i = 0, n = checkboxes.length; i < n; i++) {
+        checkboxes[i].checked = source.checked;
+    }
+
+    filterExpressway();
 }
 
 function initializeCongUI() {
@@ -60,6 +85,17 @@ function initializeCongUI() {
         onSelect : function(selectedDateTime) {
             startDateTextBox.datetimepicker('option', 'maxDate', endDateTextBox.datetimepicker('getDate'));
         }
+    });
+
+    // change handler for day filter checkbox
+    $("input[name=dataCongestDay]").change(function() {
+        concatDays(dayExpresswayArray);
+        filterPolyLine();
+    });
+
+    // change handler for expressway filter checkbox
+    $("input[name=dataCongestExpressway]").change(function() {
+        filterExpressway();
     });
 }
 
@@ -114,7 +150,8 @@ function retrieveCongestion() {
             $("#congestMapContainer").css("border-style", "solid");
             $("#congestMapContainer").css("border-width", "2px");
             $("#congestMapContainer").css("border-color", "gray");
-            $("#congTableDiv").css("display", "block");
+            $("#congTableDiv").show();
+            $(".congestFilter").show();
 
             initCongMiniMap();
 
@@ -124,10 +161,15 @@ function retrieveCongestion() {
             expresswaysData = response;
 
             // bin data
-            binExpressway(response);
+            binExpresswayByDay(response);
 
             // count the no. of congestions per expressway for bar chart display
-            countExpressway(response);
+            // countExpressway(response);
+
+            // init polyLineArray
+            for ( var i = 0; i < 7; i++) {
+                polyLineArray[i] = new Array();
+            }
 
             // for congestion pairs without prior data
             plotCongestions(response.expressways);
@@ -216,7 +258,9 @@ function plotDirectionsResults(data) {
     $.each(data, function(index, dr) {
         var directionsResult = JSON.parse(dr.directionsResult);
 
-        // console.log(directionsResult);
+        // get day
+        var date = new Date(parseInt(dr.startTimestamp));
+        var day = parseInt(date.getDay());
 
         // "overview_path" to plot polyline
         var paths = directionsResult.routes[0].overview_path;
@@ -231,12 +275,16 @@ function plotDirectionsResults(data) {
 
         var polyline = new google.maps.Polyline({
             path : overview_path,
-            strokeColor : '#FF0000',
+            strokeColor : routeColor,
             strokeOpacity : 0.3,
             strokeWeight : 4
         });
 
         polyline.setMap(congMap);
+
+        polyLineArray[day].push(polyline);
+
+        // console.log(polyLineArray);
     });
 }
 
@@ -364,7 +412,34 @@ function plotCongestions(data) {
                 // add into directionsArray
                 directionsArray.push(direction);
 
-                directionsDisplay.setDirections(directionsResult);
+                // directionsDisplay.setDirections(directionsResult); // auto
+                // drawing of route by google
+
+                // manual drawing using polyline
+                // "overview_path" to plot polyline
+                var paths = directionsResult.routes[0].overview_path;
+                var overview_path = new Array();
+
+                $.each(paths, function(index, pathObj) {
+                    // create a new google latlng object for each pair of jb kb
+                    // values
+                    var overviewlatlng = new google.maps.LatLng(pathObj.jb, pathObj.kb);
+
+                    overview_path.push(overviewlatlng);
+                });
+
+                var polyline = new google.maps.Polyline({
+                    path : overview_path,
+                    strokeColor : routeColor,
+                    strokeOpacity : 0.3,
+                    strokeWeight : 4
+                });
+
+                polyline.setMap(congMap);
+
+                polyLineArray[day].push(polyline);
+
+                // console.log(polyLineArray);
             }
         });
     }
@@ -485,6 +560,142 @@ function initBarChart(data) {
         transition.select(".x.axis").call(xAxis).selectAll("g").delay(delay);
     }
 
+}
+
+function binExpresswayByDay(data) {
+    var expressways = data.expressways;
+    var directionResults = data.directionResults;
+
+    dayArray = new Array();
+
+    // init dayArray
+    for ( var i = 0; i < 7; i++) {
+        dayArray[i] = new Object();
+        dayArray[i].expressways = new Array();
+        dayArray[i].directionResults = new Array();
+    }
+
+    $.each(expressways, function(index, e) {
+        var date = new Date(parseInt(e.startTimestamp));
+        var day = parseInt(date.getDay());
+
+        dayArray[day].expressways.push(e);
+    });
+
+    // for directionResults
+    $.each(directionResults, function(index, dr) {
+        var date = new Date(parseInt(dr.startTimestamp));
+        var day = parseInt(date.getDay());
+
+        dayArray[day].directionResults.push(dr);
+    });
+
+    // 0 = mon, 6 = sun
+    $.each(dayArray, function(index, day) {
+        dayExpresswayArray[index] = binExpressway(day);
+    });
+
+    concatDays(dayExpresswayArray);
+
+}
+
+function concatDays(array) {
+    // check day filter checkbox and combine those days that are checked
+    // 0 = mon, 6 = sun
+    // console.log(array);
+
+    var finalExpresswayArray = new Array();
+    var finalExpresswayCountArray = new Array();
+
+    finalExpresswayCountArray.expressways = new Array();
+    finalExpresswayCountArray.directionResults = new Array();
+
+    // init finalDayArray
+    for ( var i = 0; i < 24; i++) {
+        var expresswayObj = new Object();
+        expresswayObj.PIE = 0;
+        expresswayObj.BKE = 0;
+        expresswayObj.AYE = 0;
+        expresswayObj.SLE = 0;
+        expresswayObj.TPE = 0;
+        expresswayObj.ECP = 0;
+        expresswayObj.KJE = 0;
+        expresswayObj.KPE = 0;
+        expresswayObj.CTE = 0;
+
+        var iString = i.toString();
+
+        if (i < 10) {
+            iString = "0" + iString;
+        }
+
+        expresswayObj.hour = iString;
+        expresswayObj.data = new Array();
+        finalExpresswayArray.push(expresswayObj);
+    }
+
+    $("input[name=dataCongestDay]").each(function() {
+        if (this.checked) {
+            var day = parseInt(this.value);
+
+            finalExpresswayCountArray.expressways = finalExpresswayCountArray.expressways.concat(dayArray[day].expressways);
+            finalExpresswayCountArray.directionResults = finalExpresswayCountArray.directionResults.concat(dayArray[day].directionResults);
+
+            // take all data from this day and put into finalExpresswayArray
+            for ( var h = 0; h < 24; h++) {
+
+                finalExpresswayArray[h].PIE += array[day][h].PIE;
+                finalExpresswayArray[h].BKE += array[day][h].BKE;
+                finalExpresswayArray[h].AYE += array[day][h].AYE;
+                finalExpresswayArray[h].SLE += array[day][h].SLE;
+                finalExpresswayArray[h].TPE += array[day][h].TPE;
+                finalExpresswayArray[h].ECP += array[day][h].ECP;
+                finalExpresswayArray[h].KJE += array[day][h].KJE;
+                finalExpresswayArray[h].KPE += array[day][h].KPE;
+                finalExpresswayArray[h].CTE += array[day][h].CTE;
+
+                finalExpresswayArray[h].data = finalExpresswayArray[h].data.concat(array[day][h].data);
+            }
+        }
+    });
+
+    // recalculate
+    countExpressway(finalExpresswayCountArray);
+    initLineChart(finalExpresswayArray);
+}
+
+function filterPolyLine() {
+    // clear table rows
+    $('.congRow').remove();
+
+    // set everything to invisible first
+    $.each(polyLineArray, function(index, polyLineDay) {
+        $.each(polyLineDay, function(index, polyLine) {
+            polyLine.setVisible(false);
+        });
+    });
+
+    $("input[name=dataCongestDay]").each(function() {
+        if (this.checked) {
+            var day = parseInt(this.value);
+
+            $.each(polyLineArray[day], function(index, polyLine) {
+                polyLine.setVisible(true);
+            });
+        }
+    });
+}
+
+function filterExpressway() {
+    $("input[name=dataCongestExpressway]").each(function() {
+        var className = ".line" + this.value;
+
+        if (this.checked) {
+            $(className).css("visibility", 'visible');
+        } else {
+            $(className).css("visibility", 'hidden');
+        }
+    });
 }
 
 function binExpressway(data) {
@@ -731,8 +942,7 @@ function binExpressway(data) {
     // console.log("expresswayArray: ");
     // console.log(expresswayArray);
 
-    // initialize the line chart with expresswayArray
-    initLineChart(expresswayArray);
+    return expresswayArray;
 }
 
 function initLineChart(data) {
@@ -828,7 +1038,9 @@ function initLineChart(data) {
 
     var expressway = svg.selectAll(".expressway").data(expressways).enter().append("g").attr("class", "expressway");
 
-    expressway.append("path").attr("class", "line").attr("d", function(d) {
+    expressway.append("path").attr("class", function(d) {
+        return ("line " + "line" + d.name);
+    }).attr("d", function(d) {
         return line(d.values);
     }).style("stroke", function(d) {
         return color(d.name);
@@ -846,8 +1058,12 @@ function initLineChart(data) {
         });
     });
 
+    // console.log(circlePosArray);
+
     svg.selectAll("circle").data(circlePosArray).enter().append("circle").attr("style", "cursor:hand;").attr("stroke", "gray").style("stroke-width",
-            "1").attr("fill", "#E5E4E2").attr("r", 4).attr("cx", function(d) {
+            "1").attr("fill", "#E5E4E2").attr("r", 4).attr("class", function(d) {
+        return "line" + d.data[0].name;
+    }).attr("cx", function(d) {
         // console.log("xx: " + xx(d));
         return xx(d);
     }).attr("cy", function(d) {

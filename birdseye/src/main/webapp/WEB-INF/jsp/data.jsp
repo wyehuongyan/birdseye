@@ -332,6 +332,77 @@
                 <div class="form-actions">  
                   <input id="congestRetrieveButton" class="btn btn-primary" data-loading-text="Retrieving..." type="submit" value="Retrieve"></input>
                 </div>
+                
+                <div class="control-group congestFilter" style="display: none;">
+                <label class="control-label">Check to filter by day: </label>
+                  <div class="controls">
+                    <div>
+                      <label class="checkbox">
+                        <input type="checkbox" checked id="dataAllDayCheckbox" value="All" onClick="toggleDaysAll(this)"> All
+                      </label>
+                      <label class="checkbox">
+                        <input type="checkbox" checked name="dataCongestDay" id="dataMondayCheckbox" value="0" onchange=""> Monday
+                      </label>
+                      <label class="checkbox">
+                        <input type="checkbox" checked name="dataCongestDay" id="dataTuesdayCheckbox" value="1" onchange=""> Tuesday
+                      </label>
+                      <label class="checkbox">
+                        <input type="checkbox" checked name="dataCongestDay" id="dataWednesdayCheckbox" value="2" onchange=""> Wednesday
+                      </label>
+                      <label class="checkbox">
+                        <input type="checkbox" checked name="dataCongestDay" id="dataThursdayCheckbox" value="3" onchange=""> Thursday
+                      </label>
+                      <label class="checkbox">
+                        <input type="checkbox" checked name="dataCongestDay" id="dataFridayCheckbox" value="4" onchange=""> Friday
+                      </label>
+                      <label class="checkbox">
+                        <input type="checkbox" checked name="dataCongestDay" id="dataSaturdayCheckbox" value="5" onchange=""> Saturday
+                      </label>
+                      <label class="checkbox">
+                        <input type="checkbox" checked name="dataCongestDay" id="dataSundayCheckbox" value="6" onchange=""> Sunday
+                      </label>
+                    </div>
+                  </div>
+                </div>
+                
+                <div class="control-group congestFilter" style="display: none;">
+                <label class="control-label">Check to filter by Expressway: </label>
+                  <div class="controls">
+                    <div>
+                      <label class="checkbox">
+                        <input type="checkbox" checked id="dataAllExpresswayCheckbox" value="All" onclick="toggleExpresswaysAll(this)"> All
+                      </label>
+                      <label class="checkbox">
+                        <input type="checkbox" checked name="dataCongestExpressway" id="dataPIECheckbox" value="PIE" onchange=""> Pan Island Expressway (PIE)
+                      </label>
+                      <label class="checkbox">
+                        <input type="checkbox" checked name="dataCongestExpressway" id="dataBKECheckbox" value="BKE" onchange=""> Bukit Timah Expressway (BKE)
+                      </label>
+                      <label class="checkbox">
+                        <input type="checkbox" checked name="dataCongestExpressway" id="dataAYECheckbox" value="AYE" onchange=""> Ayer Rajah Expressway (AYE)
+                      </label>
+                      <label class="checkbox">
+                        <input type="checkbox" checked name="dataCongestExpressway" id="dataSLECheckbox" value="SLE" onchange=""> Seletar Expressway (SLE)
+                      </label>
+                      <label class="checkbox">
+                        <input type="checkbox" checked name="dataCongestExpressway" id="dataTPECheckbox" value="TPE" onchange=""> Tampines Expressway (TPE)
+                      </label>
+                      <label class="checkbox">
+                        <input type="checkbox" checked name="dataCongestExpressway" id="dataECPCheckbox" value="ECP" onchange=""> East Coast Parkway (ECP)
+                      </label>
+                      <label class="checkbox">
+                        <input type="checkbox" checked name="dataCongestExpressway" id="dataKJECheckbox" value="KJE" onchange=""> Kranji Expressway (KJE)
+                      </label>
+                      <label class="checkbox">
+                        <input type="checkbox" checked name="dataCongestExpressway" id="dataCTECheckbox" value="CTE" onchange=""> Central Expressway (CTE)
+                      </label>
+                      <label class="checkbox">
+                        <input type="checkbox" checked name="dataCongestExpressway" id="dataKPECheckbox" value="KPE" onchange=""> Kallang Paya Lebar Expressway (KPE)
+                      </label>
+                    </div>
+                  </div>
+                </div>
+                
              </fieldset>
             </form>
             
@@ -455,7 +526,7 @@
             <div class="span10">
                 <div id="d3Linechart"></div>
             </div>
-            <div id="congTableDiv" style="display:none;" class="span2">
+            <div id="congTableDiv" style="height: 400px; overflow: scroll; display:none;" class="span2">
             <p>Mouseover row to highlight route on map</p>
                 <table id="congTable" class="table table-hover table-condensed">
                 <tr>
