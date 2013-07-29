@@ -389,6 +389,10 @@ function plotCongestions(data) {
 
         directionsDisplay.setMap(congMap);
 
+        // get day
+        var date = new Date(parseInt(expressway.startTimestamp));
+        var day = parseInt(date.getDay());
+
         var request = {
             origin : start,
             destination : end,
@@ -1073,7 +1077,7 @@ function initLineChart(data) {
     }).on(
             "mousedown",
             function(d) {
-                console.log(d.data);
+                // console.log(d.data);
                 // clear table first
                 $('.congRow').remove();
 
