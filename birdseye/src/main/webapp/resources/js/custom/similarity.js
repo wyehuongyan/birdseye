@@ -105,21 +105,25 @@ function initCarouselImages(camera) {
 }
 
 function createTrafficImageMarker(camera) {
-    // plot on map
-    var trafficImageMarker = new google.maps.Marker({
-        position : new google.maps.LatLng(camera[0].latitude, camera[0].longitude),
-        map : map,
-        icon : "./resources/icons/traffic_camera.png",
-        title : "Camera ID: " + camera[0].cameraId,
-        animation : google.maps.Animation.DROP
-    });
+    // console.log(camera);
 
-    // marker click listener
-    google.maps.event.addListener(trafficImageMarker, 'click', function() {
-        initCarouselImages(camera);
-    });
+    if (camera.length != 0) {
+        // plot on map
+        var trafficImageMarker = new google.maps.Marker({
+            position : new google.maps.LatLng(camera[0].latitude, camera[0].longitude),
+            map : map,
+            icon : "./resources/icons/traffic_camera.png",
+            title : "Camera ID: " + camera[0].cameraId,
+            animation : google.maps.Animation.DROP
+        });
 
-    return trafficImageMarker;
+        // marker click listener
+        google.maps.event.addListener(trafficImageMarker, 'click', function() {
+            initCarouselImages(camera);
+        });
+
+        markerArray.push(trafficImageMarker);
+    }
 }
 
 function addSimMarkerPair(rowId) {
@@ -155,6 +159,8 @@ function addSimMarkerPair(rowId) {
     var bestImages = incident.bestImages;
 
     if (bestImages.length != 0) {
+        // console.log(bestImages);
+
         var cameraArray = new Array();
 
         // sorting
@@ -167,18 +173,17 @@ function addSimMarkerPair(rowId) {
             }
         });
 
+        // console.log(cameraArray);
+
         // plotting
         for ( var cameraKey in cameraArray) {
 
-            // console.log(cameraKey);
+            // console.log("cameraKey: " + cameraKey);
             var camera = cameraArray[cameraKey];
 
-            var trafficImageMarker = createTrafficImageMarker(camera);
-
-            markerArray.push(trafficImageMarker);
+            // console.log("Creating traffic image marker...");
+            createTrafficImageMarker(camera);
         }
-
-        // console.log(cameraArray);
     }
 
     var targetIncidentMarker = new google.maps.Marker({
