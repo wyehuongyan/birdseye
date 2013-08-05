@@ -6071,7 +6071,7 @@ a.badge:focus {
 .carousel-indicators {
   position: absolute;
   top: 15px;
-  right: 220px;
+  right: 80px;
   z-index: 5;
   margin: 0;
   list-style: none;
