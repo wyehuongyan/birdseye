@@ -745,9 +745,9 @@ function binExpressway(data) {
             congestion.name = "PIE";
 
             var date = new Date(parseInt(congestion.startTimestamp)/*
-             * -
-             * 28800000
-             */);
+                                                                     * -
+                                                                     * 28800000
+                                                                     */);
             var hours = parseInt(date.getHours());
 
             expresswayArray[hours].PIE++;
@@ -759,9 +759,9 @@ function binExpressway(data) {
             congestion.name = "BKE";
 
             var date = new Date(parseInt(congestion.startTimestamp)/*
-             * -
-             * 28800000
-             */);
+                                                                     * -
+                                                                     * 28800000
+                                                                     */);
             var hours = parseInt(date.getHours());
 
             expresswayArray[hours].BKE++;
@@ -773,9 +773,9 @@ function binExpressway(data) {
             congestion.name = "AYE";
 
             var date = new Date(parseInt(congestion.startTimestamp)/*
-             * -
-             * 28800000
-             */);
+                                                                     * -
+                                                                     * 28800000
+                                                                     */);
             var hours = parseInt(date.getHours());
 
             expresswayArray[hours].AYE++;
@@ -787,9 +787,9 @@ function binExpressway(data) {
             congestion.name = "SLE";
 
             var date = new Date(parseInt(congestion.startTimestamp)/*
-             * -
-             * 28800000
-             */);
+                                                                     * -
+                                                                     * 28800000
+                                                                     */);
             var hours = parseInt(date.getHours());
 
             expresswayArray[hours].SLE++;
@@ -801,9 +801,9 @@ function binExpressway(data) {
             congestion.name = "TPE";
 
             var date = new Date(parseInt(congestion.startTimestamp)/*
-             * -
-             * 28800000
-             */);
+                                                                     * -
+                                                                     * 28800000
+                                                                     */);
             var hours = parseInt(date.getHours());
 
             expresswayArray[hours].TPE++;
@@ -815,9 +815,9 @@ function binExpressway(data) {
             congestion.name = "ECP";
 
             var date = new Date(parseInt(congestion.startTimestamp)/*
-             * -
-             * 28800000
-             */);
+                                                                     * -
+                                                                     * 28800000
+                                                                     */);
             var hours = parseInt(date.getHours());
 
             expresswayArray[hours].ECP++;
@@ -829,9 +829,9 @@ function binExpressway(data) {
             congestion.name = "KJE";
 
             var date = new Date(parseInt(congestion.startTimestamp)/*
-             * -
-             * 28800000
-             */);
+                                                                     * -
+                                                                     * 28800000
+                                                                     */);
             var hours = parseInt(date.getHours());
 
             expresswayArray[hours].KJE++;
@@ -843,9 +843,9 @@ function binExpressway(data) {
             congestion.name = "KPE";
 
             var date = new Date(parseInt(congestion.startTimestamp)/*
-             * -
-             * 28800000
-             */);
+                                                                     * -
+                                                                     * 28800000
+                                                                     */);
             var hours = parseInt(date.getHours());
 
             expresswayArray[hours].KPE++;
@@ -857,9 +857,9 @@ function binExpressway(data) {
             congestion.name = "CTE";
 
             var date = new Date(parseInt(congestion.startTimestamp)/*
-             * -
-             * 28800000
-             */);
+                                                                     * -
+                                                                     * 28800000
+                                                                     */);
             var hours = parseInt(date.getHours());
 
             expresswayArray[hours].CTE++;
@@ -878,9 +878,9 @@ function binExpressway(data) {
             congestion.name = "PIE";
 
             var date = new Date(parseInt(congestion.startTimestamp)/*
-             * -
-             * 28800000
-             */);
+                                                                     * -
+                                                                     * 28800000
+                                                                     */);
             var hours = parseInt(date.getHours());
 
             expresswayArray[hours].PIE++;
@@ -892,9 +892,9 @@ function binExpressway(data) {
             congestion.name = "BKE";
 
             var date = new Date(parseInt(congestion.startTimestamp)/*
-             * -
-             * 28800000
-             */);
+                                                                     * -
+                                                                     * 28800000
+                                                                     */);
             var hours = parseInt(date.getHours());
 
             expresswayArray[hours].BKE++;
@@ -906,9 +906,9 @@ function binExpressway(data) {
             congestion.name = "AYE";
 
             var date = new Date(parseInt(congestion.startTimestamp)/*
-             * -
-             * 28800000
-             */);
+                                                                     * -
+                                                                     * 28800000
+                                                                     */);
             var hours = parseInt(date.getHours());
 
             expresswayArray[hours].AYE++;
@@ -920,9 +920,9 @@ function binExpressway(data) {
             congestion.name = "SLE";
 
             var date = new Date(parseInt(congestion.startTimestamp)/*
-             * -
-             * 28800000
-             */);
+                                                                     * -
+                                                                     * 28800000
+                                                                     */);
             var hours = parseInt(date.getHours());
 
             expresswayArray[hours].SLE++;
@@ -934,9 +934,9 @@ function binExpressway(data) {
             congestion.name = "TPE";
 
             var date = new Date(parseInt(congestion.startTimestamp)/*
-             * -
-             * 28800000
-             */);
+                                                                     * -
+                                                                     * 28800000
+                                                                     */);
             var hours = parseInt(date.getHours());
 
             expresswayArray[hours].TPE++;
@@ -948,9 +948,9 @@ function binExpressway(data) {
             congestion.name = "ECP";
 
             var date = new Date(parseInt(congestion.startTimestamp)/*
-             * -
-             * 28800000
-             */);
+                                                                     * -
+                                                                     * 28800000
+                                                                     */);
             var hours = parseInt(date.getHours());
 
             expresswayArray[hours].ECP++;
@@ -962,9 +962,9 @@ function binExpressway(data) {
             congestion.name = "KJE";
 
             var date = new Date(parseInt(congestion.startTimestamp)/*
-             * -
-             * 28800000
-             */);
+                                                                     * -
+                                                                     * 28800000
+                                                                     */);
             var hours = parseInt(date.getHours());
 
             expresswayArray[hours].KJE++;
@@ -976,9 +976,9 @@ function binExpressway(data) {
             congestion.name = "KPE";
 
             var date = new Date(parseInt(congestion.startTimestamp)/*
-             * -
-             * 28800000
-             */);
+                                                                     * -
+                                                                     * 28800000
+                                                                     */);
             var hours = parseInt(date.getHours());
 
             expresswayArray[hours].KPE++;
@@ -990,9 +990,9 @@ function binExpressway(data) {
             congestion.name = "CTE";
 
             var date = new Date(parseInt(congestion.startTimestamp)/*
-             * -
-             * 28800000
-             */);
+                                                                     * -
+                                                                     * 28800000
+                                                                     */);
             var hours = parseInt(date.getHours());
 
             expresswayArray[hours].CTE++;
@@ -1014,7 +1014,7 @@ function initLineChart(data) {
         right : 80,
         bottom : 30,
         left : 30
-    }, width = 1240 - margin.left - margin.right, height = 400 - margin.top - margin.bottom;
+    }, width = $("#d3Linechart").width() - margin.right, height = 400 - margin.top - margin.bottom;
 
     var x = d3.time.scale().range([ 0, width ]);
 
