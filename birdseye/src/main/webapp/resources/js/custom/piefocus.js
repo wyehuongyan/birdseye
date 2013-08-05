@@ -608,8 +608,10 @@ function draw(data, color) {
 
                         for ( var i = 0; i < d.data.length; i++) {
                             htmlString += "<tr class='infoRow' id='row" + (i + 1) + "'>" + "<td>" + (i + 1) + "</td>" + "<td>"
-                                    + (new Date((parseInt(d.data[i].startTimestamp)) /*- 28800000*/)).toString() + "</td>"
-                                    + "<td class='infoMsg' id='infoMsg" + (i + 1) + "'>"// cloud
+                                    + (new Date((parseInt(d.data[i].startTimestamp))/*
+                                     * -
+                                     * 28800000
+                                     */)).toString() + "</td>" + "<td class='infoMsg' id='infoMsg" + (i + 1) + "'>"// cloud
                                     // deployment
                                     + d.data[i].message + "</td>" + "<td>" + (d.data[i].timeElapsed.replace("PT", "").replace("S", "")).toHHMMSS()
                                     + "</td>" + "</tr>";

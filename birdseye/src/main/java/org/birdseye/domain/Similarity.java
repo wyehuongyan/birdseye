@@ -1,5 +1,6 @@
 package org.birdseye.domain;
 
+import java.util.List;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 @Document
@@ -7,6 +8,7 @@ public class Similarity {
 
     private Incident targetIncident;
     private Incident bestMatch;
+    private List<ProcessedImage> bestImages;
 
     private String timeApart;
     private String similarity;
@@ -14,9 +16,10 @@ public class Similarity {
     public Similarity() {
     }
 
-    public Similarity(final Incident targetIncident, final Incident bestMatch) {
+    public Similarity(final Incident targetIncident, final Incident bestMatch, final List<ProcessedImage> bestImages) {
         this.targetIncident = targetIncident;
         this.bestMatch = bestMatch;
+        this.setBestImages(bestImages);
     }
 
     public Incident getTargetIncident() {
@@ -49,5 +52,13 @@ public class Similarity {
 
     public void setSimilarity(final String similarity) {
         this.similarity = similarity;
+    }
+
+    public List<ProcessedImage> getBestImages() {
+        return bestImages;
+    }
+
+    public void setBestImages(final List<ProcessedImage> bestImages) {
+        this.bestImages = bestImages;
     }
 }

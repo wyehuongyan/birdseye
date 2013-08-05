@@ -91,6 +91,12 @@
           backdrop: "static"
         });
         
+        // modal parameters
+        $('#carouselModal').modal({
+          keyboard: true,
+          show: false
+        });
+        
         // progress bar parameters
         $( "#progressbar" ).progressbar({
           value: false
@@ -543,12 +549,25 @@
   
     <!-- Modal -->
     <div id="loadingModal" class="modal hide fade">
-    <div class="modal-header">
-      <h3>Loading Data...</h3>
+      <div class="modal-header">
+        <h3>Loading Data...</h3>
+      </div>
+      <div class="modal-body">
+        <div id="progressbar"></div>
+      </div>
     </div>
-    <div class="modal-body">
-      <div id="progressbar"></div>
-    </div>
+    
+    <!-- Carousel Modal -->
+    <div id="carouselModal" class="modal hide fade">
+      <div class="modal-header">
+        <h3>Traffic Images</h3>
+      </div>
+      <div class="modal-body">
+        <div id="carousel-body"></div>
+      </div>
+      <div class="modal-footer">
+        <div id="carousel-footer"></div>
+      </div>
     </div>
   </div>
 

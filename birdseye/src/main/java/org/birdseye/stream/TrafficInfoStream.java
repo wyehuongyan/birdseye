@@ -65,7 +65,7 @@ public final class TrafficInfoStream {
 
     @PreDestroy
     public void clearTrafficInfoStream() {
-        System.out.println("Spring lifecycle destroyer executed");
+        System.out.println("Spring lifecycle destroyer executed: TrafficInfoStream");
 
         timer.cancel();
         timer.purge();

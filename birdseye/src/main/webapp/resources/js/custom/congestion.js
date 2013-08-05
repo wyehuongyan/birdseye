@@ -259,7 +259,10 @@ function plotDirectionsResults(data) {
         var directionsResult = JSON.parse(dr.directionsResult);
 
         // get day
-        var date = new Date(parseInt(dr.startTimestamp));
+        var date = new Date(parseInt(dr.startTimestamp)/* - 28800000 */); //
+        // cloud
+        // deployment
+        // var date = new Date(parseInt(dr.startTimestamp));
         var day = parseInt(date.getDay());
 
         // "overview_path" to plot polyline
@@ -390,7 +393,7 @@ function plotCongestions(data) {
         directionsDisplay.setMap(congMap);
 
         // get day
-        var date = new Date(parseInt(expressway.startTimestamp));
+        var date = new Date(parseInt(expressway.startTimestamp)/* - 28800000 */);
         var day = parseInt(date.getDay());
 
         var request = {
@@ -580,7 +583,7 @@ function binExpresswayByDay(data) {
     }
 
     $.each(expressways, function(index, e) {
-        var date = new Date(parseInt(e.startTimestamp));
+        var date = new Date(parseInt(e.startTimestamp)/* - 28800000 */);
         var day = parseInt(date.getDay());
 
         dayArray[day].expressways.push(e);
@@ -588,7 +591,7 @@ function binExpresswayByDay(data) {
 
     // for directionResults
     $.each(directionResults, function(index, dr) {
-        var date = new Date(parseInt(dr.startTimestamp));
+        var date = new Date(parseInt(dr.startTimestamp)/* - 28800000 */);
         var day = parseInt(date.getDay());
 
         dayArray[day].directionResults.push(dr);
@@ -741,7 +744,10 @@ function binExpressway(data) {
             congestion.incidentId = e.incidentId;
             congestion.name = "PIE";
 
-            var date = new Date(parseInt(congestion.startTimestamp));
+            var date = new Date(parseInt(congestion.startTimestamp)/*
+             * -
+             * 28800000
+             */);
             var hours = parseInt(date.getHours());
 
             expresswayArray[hours].PIE++;
@@ -752,7 +758,10 @@ function binExpressway(data) {
             congestion.incidentId = e.incidentId;
             congestion.name = "BKE";
 
-            var date = new Date(parseInt(congestion.startTimestamp));
+            var date = new Date(parseInt(congestion.startTimestamp)/*
+             * -
+             * 28800000
+             */);
             var hours = parseInt(date.getHours());
 
             expresswayArray[hours].BKE++;
@@ -763,7 +772,10 @@ function binExpressway(data) {
             congestion.incidentId = e.incidentId;
             congestion.name = "AYE";
 
-            var date = new Date(parseInt(congestion.startTimestamp));
+            var date = new Date(parseInt(congestion.startTimestamp)/*
+             * -
+             * 28800000
+             */);
             var hours = parseInt(date.getHours());
 
             expresswayArray[hours].AYE++;
@@ -774,7 +786,10 @@ function binExpressway(data) {
             congestion.incidentId = e.incidentId;
             congestion.name = "SLE";
 
-            var date = new Date(parseInt(congestion.startTimestamp));
+            var date = new Date(parseInt(congestion.startTimestamp)/*
+             * -
+             * 28800000
+             */);
             var hours = parseInt(date.getHours());
 
             expresswayArray[hours].SLE++;
@@ -785,7 +800,10 @@ function binExpressway(data) {
             congestion.incidentId = e.incidentId;
             congestion.name = "TPE";
 
-            var date = new Date(parseInt(congestion.startTimestamp));
+            var date = new Date(parseInt(congestion.startTimestamp)/*
+             * -
+             * 28800000
+             */);
             var hours = parseInt(date.getHours());
 
             expresswayArray[hours].TPE++;
@@ -796,7 +814,10 @@ function binExpressway(data) {
             congestion.incidentId = e.incidentId;
             congestion.name = "ECP";
 
-            var date = new Date(parseInt(congestion.startTimestamp));
+            var date = new Date(parseInt(congestion.startTimestamp)/*
+             * -
+             * 28800000
+             */);
             var hours = parseInt(date.getHours());
 
             expresswayArray[hours].ECP++;
@@ -807,7 +828,10 @@ function binExpressway(data) {
             congestion.incidentId = e.incidentId;
             congestion.name = "KJE";
 
-            var date = new Date(parseInt(congestion.startTimestamp));
+            var date = new Date(parseInt(congestion.startTimestamp)/*
+             * -
+             * 28800000
+             */);
             var hours = parseInt(date.getHours());
 
             expresswayArray[hours].KJE++;
@@ -818,7 +842,10 @@ function binExpressway(data) {
             congestion.incidentId = e.incidentId;
             congestion.name = "KPE";
 
-            var date = new Date(parseInt(congestion.startTimestamp));
+            var date = new Date(parseInt(congestion.startTimestamp)/*
+             * -
+             * 28800000
+             */);
             var hours = parseInt(date.getHours());
 
             expresswayArray[hours].KPE++;
@@ -829,7 +856,10 @@ function binExpressway(data) {
             congestion.incidentId = e.incidentId;
             congestion.name = "CTE";
 
-            var date = new Date(parseInt(congestion.startTimestamp));
+            var date = new Date(parseInt(congestion.startTimestamp)/*
+             * -
+             * 28800000
+             */);
             var hours = parseInt(date.getHours());
 
             expresswayArray[hours].CTE++;
@@ -847,7 +877,10 @@ function binExpressway(data) {
             congestion.incidentId = dr.id;
             congestion.name = "PIE";
 
-            var date = new Date(parseInt(congestion.startTimestamp));
+            var date = new Date(parseInt(congestion.startTimestamp)/*
+             * -
+             * 28800000
+             */);
             var hours = parseInt(date.getHours());
 
             expresswayArray[hours].PIE++;
@@ -858,7 +891,10 @@ function binExpressway(data) {
             congestion.incidentId = dr.id;
             congestion.name = "BKE";
 
-            var date = new Date(parseInt(congestion.startTimestamp));
+            var date = new Date(parseInt(congestion.startTimestamp)/*
+             * -
+             * 28800000
+             */);
             var hours = parseInt(date.getHours());
 
             expresswayArray[hours].BKE++;
@@ -869,7 +905,10 @@ function binExpressway(data) {
             congestion.incidentId = dr.id;
             congestion.name = "AYE";
 
-            var date = new Date(parseInt(congestion.startTimestamp));
+            var date = new Date(parseInt(congestion.startTimestamp)/*
+             * -
+             * 28800000
+             */);
             var hours = parseInt(date.getHours());
 
             expresswayArray[hours].AYE++;
@@ -880,7 +919,10 @@ function binExpressway(data) {
             congestion.incidentId = dr.id;
             congestion.name = "SLE";
 
-            var date = new Date(parseInt(congestion.startTimestamp));
+            var date = new Date(parseInt(congestion.startTimestamp)/*
+             * -
+             * 28800000
+             */);
             var hours = parseInt(date.getHours());
 
             expresswayArray[hours].SLE++;
@@ -891,7 +933,10 @@ function binExpressway(data) {
             congestion.incidentId = dr.id;
             congestion.name = "TPE";
 
-            var date = new Date(parseInt(congestion.startTimestamp));
+            var date = new Date(parseInt(congestion.startTimestamp)/*
+             * -
+             * 28800000
+             */);
             var hours = parseInt(date.getHours());
 
             expresswayArray[hours].TPE++;
@@ -902,7 +947,10 @@ function binExpressway(data) {
             congestion.incidentId = dr.id;
             congestion.name = "ECP";
 
-            var date = new Date(parseInt(congestion.startTimestamp));
+            var date = new Date(parseInt(congestion.startTimestamp)/*
+             * -
+             * 28800000
+             */);
             var hours = parseInt(date.getHours());
 
             expresswayArray[hours].ECP++;
@@ -913,7 +961,10 @@ function binExpressway(data) {
             congestion.incidentId = dr.id;
             congestion.name = "KJE";
 
-            var date = new Date(parseInt(congestion.startTimestamp));
+            var date = new Date(parseInt(congestion.startTimestamp)/*
+             * -
+             * 28800000
+             */);
             var hours = parseInt(date.getHours());
 
             expresswayArray[hours].KJE++;
@@ -924,7 +975,10 @@ function binExpressway(data) {
             congestion.incidentId = dr.id;
             congestion.name = "KPE";
 
-            var date = new Date(parseInt(congestion.startTimestamp));
+            var date = new Date(parseInt(congestion.startTimestamp)/*
+             * -
+             * 28800000
+             */);
             var hours = parseInt(date.getHours());
 
             expresswayArray[hours].KPE++;
@@ -935,7 +989,10 @@ function binExpressway(data) {
             congestion.incidentId = dr.id;
             congestion.name = "CTE";
 
-            var date = new Date(parseInt(congestion.startTimestamp));
+            var date = new Date(parseInt(congestion.startTimestamp)/*
+             * -
+             * 28800000
+             */);
             var hours = parseInt(date.getHours());
 
             expresswayArray[hours].CTE++;

@@ -66,6 +66,62 @@ function initSimMiniMap() {
     map = new google.maps.Map(document.getElementById("simMapContainer"), myOptions);
 }
 
+function initCarouselImages(camera) {
+    $(".carousel").remove();
+    $(".carouselModal-footer").remove();
+
+    var carouselHTMLString = "<div id='trafficImageCarousel' class='carousel slide'> <ol class='carousel-indicators'></ol><div class='carousel-inner'></div><a class='carousel-control left' href='#trafficImageCarousel' data-slide='prev'>&lsaquo;</a><a class='carousel-control right' href='#trafficImageCarousel' data-slide='next'>&rsaquo;</a></div>";
+    $("#carousel-body").append(carouselHTMLString);
+
+    // console.log("click listener for camera: " + camera[0].cameraId);
+
+    var carouselIndicatorHTMLString = "<li data-target='#trafficImageCarousel' data-slide-to='0' class='active carousel-indicator-content'></li>";
+    var carouselInnerHTMLString = "<div class='active carousel-inner-content item'><img style='margin-left: auto; margin-right: auto;' src='data:image/jpg;base64,"
+            + camera[0].image + "'></div>";
+
+    $
+            .each(
+                    camera,
+                    function(index, processedImage) {
+                        if (index != 0) {
+                            carouselIndicatorHTMLString += "<li data-target='#trafficImageCarousel' data-slide-to='" + index
+                                    + "' class='carousel-indicator-content'></li>";
+                            carouselInnerHTMLString += "<div class='carousel-inner-content item'><img style='margin-left: auto; margin-right: auto;' src='data:image/jpg;base64,"
+                                    + processedImage.image + "'></div>";
+                        }
+                    });
+
+    $(".carousel-indicators").append(carouselIndicatorHTMLString);
+    $(".carousel-inner").append(carouselInnerHTMLString);
+
+    $("#carousel-footer").append("<p class='carouselModal-footer'>Camera Id: " + camera[0].cameraId + "</p>");
+
+    // stop auto scrolling
+    $('#trafficImageCarousel').carousel({
+        interval : false
+    });
+
+    $('#carouselModal').modal('show');
+}
+
+function createTrafficImageMarker(camera) {
+    // plot on map
+    var trafficImageMarker = new google.maps.Marker({
+        position : new google.maps.LatLng(camera[0].latitude, camera[0].longitude),
+        map : map,
+        icon : "./resources/icons/traffic_camera.png",
+        title : "Camera ID: " + camera[0].cameraId,
+        animation : google.maps.Animation.DROP
+    });
+
+    // marker click listener
+    google.maps.event.addListener(trafficImageMarker, 'click', function() {
+        initCarouselImages(camera);
+    });
+
+    return trafficImageMarker;
+}
+
 function addSimMarkerPair(rowId) {
     // clear map of markers first
     map.clearMarkers();
@@ -96,6 +152,34 @@ function addSimMarkerPair(rowId) {
 
     var targetIncident = incident.targetIncident;
     var bestMatch = incident.bestMatch;
+    var bestImages = incident.bestImages;
+
+    if (bestImages.length != 0) {
+        var cameraArray = new Array();
+
+        // sorting
+        $.each(bestImages, function(index, processedImage) {
+            // bin into different arrays, depending on camera ID
+            if (!(typeof cameraArray[processedImage.cameraId] !== 'undefined' && cameraArray[processedImage.cameraId] !== null)) {
+                cameraArray[processedImage.cameraId] = new Array();
+            } else {
+                cameraArray[processedImage.cameraId].push(processedImage);
+            }
+        });
+
+        // plotting
+        for ( var cameraKey in cameraArray) {
+
+            // console.log(cameraKey);
+            var camera = cameraArray[cameraKey];
+
+            var trafficImageMarker = createTrafficImageMarker(camera);
+
+            markerArray.push(trafficImageMarker);
+        }
+
+        // console.log(cameraArray);
+    }
 
     var targetIncidentMarker = new google.maps.Marker({
         position : new google.maps.LatLng(targetIncident.latitude, targetIncident.longitude),
@@ -169,11 +253,18 @@ function retrieveSimilarIncidents() {
 
             for ( var i = 0; i < incidentData.length; i++) {
                 var dataObj = incidentData[i];
+
+                // console.log(dataObj.bestImages);
+
                 var simLevel = "Low";
 
                 if (dataObj.similarity > 0) {
-                    simLevel = "High"; // not really good to show 1.0, have
-                    // some ambiguity
+                    if (dataObj.bestImages.length != 0) {
+                        simLevel = "High (image)"
+                    } else {
+                        simLevel = "High"; // not really good to show 1.0, have
+                        // some ambiguity
+                    }
                 }
 
                 cosineSimilarity += parseFloat(dataObj.similarity);

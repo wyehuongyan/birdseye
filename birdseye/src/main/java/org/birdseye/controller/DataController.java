@@ -10,9 +10,11 @@ import org.birdseye.domain.CongestionResult;
 import org.birdseye.domain.DirectionsResult;
 import org.birdseye.domain.Expressway;
 import org.birdseye.domain.Incident;
+import org.birdseye.domain.ProcessedImage;
 import org.birdseye.domain.Ramp;
 import org.birdseye.domain.Similarity;
 import org.birdseye.domain.Summary;
+import org.birdseye.service.TrafficImageService;
 import org.birdseye.service.TrafficInfoService;
 import org.birdseye.stream.TrafficInfoStream;
 import org.codehaus.jackson.JsonFactory;
@@ -32,6 +34,9 @@ public class DataController {
 
     @Autowired
     TrafficInfoService trafficInfoService;
+
+    @Autowired
+    TrafficImageService trafficImageService;
 
     private static final String[] filters = new String[] { "till", "exit", "entrance", "with" };
     private static final String[] expressways = new String[] { "BKE", "PIE", "CTE", "KPE", "KJE", "TPE", "ECP", "AYE", "SLE" };
@@ -180,9 +185,10 @@ public class DataController {
         // and work on those that do not
         final List<DirectionsResult> existingDirections = new ArrayList<DirectionsResult>();
 
+        // retrieve all Direction objects from Directions collection
+        final List<DirectionsResult> directions = trafficInfoService.read("direction", DirectionsResult.class);
+
         for (final Incident c : congestionIncidents) {
-            // retrieve all Direction objects from Directions collection
-            final List<DirectionsResult> directions = trafficInfoService.read("direction", DirectionsResult.class);
             Boolean exist = false;
 
             // compare congestionIncidents' ID with Direction ID
@@ -352,7 +358,7 @@ public class DataController {
                         for (final Ramp r : e.getRamps()) {
                             if (org.apache.commons.lang.StringUtils.containsIgnoreCase(r.getName(), location1)) {
                                 if (!validLocation2 && !validLocation1) {
-                                    // System.out.println(String.format("on Matched 1: %s - %s", r.getName(), location1));
+                                    System.out.println(String.format("on Matched 1: %s - %s", r.getName(), location1));
                                     // order matters, 1 then 2
                                     // no overwriting
                                     validLocation1 = true;
@@ -443,6 +449,9 @@ public class DataController {
          */
 
         final List<Incident> betweenIncidents = trafficInfoService.readByTimestampBetween(startTimestamp, endTimestamp);
+        final List<ProcessedImage> processedImages = trafficImageService.read("processedimage", ProcessedImage.class);
+
+        // System.out.println("size of processedImages: " + processedImages.size());
 
         final ArrayList<Incident> type1Array = new ArrayList<Incident>();
         final ArrayList<Incident> type2Array = new ArrayList<Incident>();
@@ -507,7 +516,51 @@ public class DataController {
             i.getIncidentMap().clear();
             bestMatch.getIncidentMap().clear();
 
-            final Similarity similarity = new Similarity(i, bestMatch);
+            // list to add the best image(s) near the incident or bestMatch
+            final List<ProcessedImage> bestImages = new ArrayList<ProcessedImage>();
+
+            System.out.println("i.getStartTimestamp(): " + i.getStartTimestamp());
+            System.out.println("bestMatch.getStartTimestamp(): " + bestMatch.getStartTimestamp());
+
+            if (bestMatch.getStartTimestamp() != null) {
+                // find closest camera
+                for (final ProcessedImage processedImage : processedImages) {
+                    // distance between camera with incident or with bestMatch must be within the specified radius
+                    if ((getDistanceFromLatLonInKm(Double.parseDouble(i.getLatitude()), Double.parseDouble(i.getLongitude()),
+                            Double.parseDouble(processedImage.getLatitude()), Double.parseDouble(processedImage.getLongitude())) <= Double
+                            .parseDouble(radius))
+                            || (getDistanceFromLatLonInKm(Double.parseDouble(bestMatch.getLatitude()), Double.parseDouble(bestMatch.getLongitude()),
+                                    Double.parseDouble(processedImage.getLatitude()), Double.parseDouble(processedImage.getLongitude())) <= Double
+                                    .parseDouble(radius))) {
+                        // if camera(s) is in the range of either i or bestMatch
+
+                        // retrieve processedImages that are close to the 2 best matched pairs, from i's start time to bestmatch's end time
+                        if (i.getStartTimestamp().compareTo(bestMatch.getStartTimestamp()) < 0) {
+                            // i occurs earlier than bestMatch
+                            if ((Double.parseDouble(processedImage.getStartTimestamp()) >= Double.parseDouble(i.getStartTimestamp()))
+                                    && (Double.parseDouble(processedImage.getStartTimestamp()) <= Double.parseDouble(bestMatch.getEndTimestamp()))) {
+                                // processedImage time falls in between i and bestMatch
+                                bestImages.add(processedImage);
+
+                                // do not break loop as there could be more than 1 camera
+                                // i.e. on opposite side of expressway
+                            }
+                        } else {
+                            // bestMatch occurs after or at the same time as i
+                            if ((Double.parseDouble(processedImage.getStartTimestamp()) >= Double.parseDouble(bestMatch.getStartTimestamp()))
+                                    && (Double.parseDouble(processedImage.getStartTimestamp()) <= Double.parseDouble(i.getEndTimestamp()))) {
+                                // processedImage time falls in between bestMatch and i
+                                bestImages.add(processedImage);
+
+                                // do not break loop as there could be more than 1 camera
+                                // i.e. on opposite side of expressway
+                            }
+                        }
+                    }
+                }
+            }
+
+            final Similarity similarity = new Similarity(i, bestMatch, bestImages);
             similarity.setSimilarity(cosSim.toString());
 
             // converting the time apart from milliseconds to hrs mins and secs

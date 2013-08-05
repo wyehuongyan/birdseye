@@ -1,5 +1,6 @@
 package org.birdseye.service;
 
+import org.birdseye.stream.TrafficImageStream;
 import org.birdseye.stream.TrafficInfoStream;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.MongoDbFactory;
@@ -18,6 +19,9 @@ public class InitMongoService {
 
     @Autowired
     private TrafficInfoStream trafficInfoStream;
+
+    @Autowired
+    private TrafficImageStream trafficImageStream;
 
     public void init() {
         if (mongoDbFactory != null) {
