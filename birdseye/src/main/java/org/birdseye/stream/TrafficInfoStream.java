@@ -103,6 +103,7 @@ public final class TrafficInfoStream {
         System.out.println("Cleaning up timestamp errors...");
 
         final List<Incident> incidents = trafficInfoService.read("incident", Incident.class);
+
         for (final Incident i : incidents) {
             final String message = i.getMessage();
             final String createDate = i.getCreateDate();
@@ -136,8 +137,13 @@ public final class TrafficInfoStream {
 
             i.setStartTimestamp(String.valueOf(dateTimeOccurred.getMillis()));
 
+            System.out.println("Date: " + dateTimeOccurred);
+            System.out.println("Date in Millis: " + dateTimeOccurred.getMillis());
+
             trafficInfoService.update(i);
         }
+
+        System.out.println("Total incidents size: " + incidents.size());
     }
 
     private Incident parseIncidentEntry(final Node node, final HashMap<String, String> map) throws JaxenException {

@@ -91,6 +91,7 @@ public class TrafficInfoService {
         }
 
         existingIncident.setCreateDate(incident.getCreateDate());
+        // existingIncident.setStartTimestamp(incident.getStartTimestamp()); // uncomment if cleaning up
         existingIncident.setEndTimestamp(incident.getEndTimestamp());
         existingIncident.setTimeElapsed(incident.getTimeElapsed());
 

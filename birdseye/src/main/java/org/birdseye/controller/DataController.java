@@ -471,20 +471,30 @@ public class DataController {
         }
 
         // normalize
-        // final ArrayList<Incident> normalizedType1 = zScoreNormalize(type1Array);
-        // final ArrayList<Incident> normalizedType2 = zScoreNormalize(type2Array);
+        final Double mean[] = mean(type1Array);
+        final Double stdev[] = standardDeviation(type1Array, mean);
+
+        // use mean and std from type1array
+        final ArrayList<Incident> normalizedType1 = zScoreNormalize(type1Array, mean, stdev);
+        final ArrayList<Incident> normalizedType2 = zScoreNormalize(type2Array, mean, stdev);
 
         int numMatches = 0;
         final Double cosSimSum = 0.0d;
         final List<Similarity> cosSimilarities = new ArrayList<Similarity>(); // to store all the pairs
 
         // perform cosine similarity comparison between the two arrays
-        for (final Incident i : type1Array) {
+        for (int x = 0; x < type1Array.size(); x++) {
+            final Incident i = type1Array.get(x);
+            final Incident normalizedI = normalizedType1.get(x);
+
             Double cosSim = 0.0d;
             Incident bestMatch = new Incident();
             Double timeApart = 0.0d;
 
-            for (final Incident j : type2Array) {
+            for (int y = 0; y < type2Array.size(); y++) {
+                final Incident j = type2Array.get(y);
+                final Incident normalizedJ = normalizedType2.get(y);
+
                 // check if timestamps of both events lie within 30mins of each other
                 final Double diff = Math.abs(Double.parseDouble(i.getStartTimestamp()) - Double.parseDouble(j.getStartTimestamp()));
 
@@ -497,9 +507,12 @@ public class DataController {
                         // find best matching pair using cosine similarity
                         final Double tempCosSim = cosineSimilarity(i, j);
 
+                        // System.out.println("tempCosSim:" + tempCosSim);
+
                         // the nearer to 1 the more similar
                         if (tempCosSim > cosSim) {
                             // System.out.println("> tempCosSim:" + tempCosSim);
+                            // System.out.println("> CosSim:" + cosSim);
 
                             cosSim = tempCosSim;
                             bestMatch = j;
@@ -519,8 +532,8 @@ public class DataController {
             // list to add the best image(s) near the incident or bestMatch
             final List<ProcessedImage> bestImages = new ArrayList<ProcessedImage>();
 
-            System.out.println("i.getStartTimestamp(): " + i.getStartTimestamp());
-            System.out.println("bestMatch.getStartTimestamp(): " + bestMatch.getStartTimestamp());
+            // System.out.println("i.getStartTimestamp(): " + i.getStartTimestamp());
+            // System.out.println("bestMatch.getStartTimestamp(): " + bestMatch.getStartTimestamp());
 
             if (bestMatch.getStartTimestamp() != null) {
                 // find closest camera
@@ -560,6 +573,7 @@ public class DataController {
                 }
             }
 
+            // similarity will take index of i and bestMatch from type1Array and type2Array
             final Similarity similarity = new Similarity(i, bestMatch, bestImages);
             similarity.setSimilarity(cosSim.toString());
 
@@ -572,19 +586,20 @@ public class DataController {
             cosSimilarities.add(similarity); // add to list
 
             // debug
-            /*
-             * System.out.println(String.format("Type: %s, Lat: %s, Long: %s, Time: %s", i.getType(), i.getLatitude(), i.getLongitude(),
-             * i.getStartTimestamp())); System.out.println(String.format("Type: %s, Lat: %s, Long: %s, Time: %s", bestMatch.getType(),
-             * bestMatch.getLatitude(), bestMatch.getLongitude(), bestMatch.getStartTimestamp())); System.out.println("cosSim:" + cosSim + "\n");
-             */
+
+            // System.out.println(String.format("Type: %s, Lat: %s, Long: %s, Time: %s", originalI.getType(), originalI.getLatitude(),
+            // originalI.getLongitude(), originalI.getStartTimestamp()));
+            // System.out.println(String.format("Type: %s, Lat: %s, Long: %s, Time: %s", originalBM.getType(), originalBM.getLatitude(),
+            // originalBM.getLongitude(), originalBM.getStartTimestamp()));
+            // System.out.println("cosSim:" + cosSim + "\n");
 
             // cosSimSum += cosSim; // increment the sum of all cosSims
         }
 
         // System.out.println("cosSimSum: " + cosSimSum);
-
+        //
         // final Double cosSimMean = cosSimSum / type1Array.size(); // value depicting how similar type1 and type 2 are
-
+        //
         // System.out.println(String.format("Cosine Similarity between %s and %s is %s", type1, type2, cosSimMean));
 
         // pack into a summary entity
@@ -719,15 +734,12 @@ public class DataController {
         return standardDeviation;
     }
 
-    private static ArrayList<Incident> zScoreNormalize(final ArrayList<Incident> toBeNormalized) {
+    private static ArrayList<Incident> zScoreNormalize(final ArrayList<Incident> toBeNormalized, final Double mean[], final Double stdev[]) {
         final ArrayList<Incident> normalizedIncidents = new ArrayList<Incident>();
 
         Double normalizedLat = 0.0d;
         Double normalizedLong = 0.0d;
         Double normalizedTime = 0.0d;
-
-        final Double mean[] = mean(toBeNormalized);
-        final Double stdev[] = standardDeviation(toBeNormalized, mean);
 
         for (int j = 0; j < toBeNormalized.size(); j++) {
             final Incident i = toBeNormalized.get(j);
@@ -741,6 +753,7 @@ public class DataController {
             temp.setLatitude(normalizedLat.toString());
             temp.setLongitude(normalizedLong.toString());
             temp.setStartTimestamp(normalizedTime.toString());
+            temp.setMessage(i.getMessage());
 
             normalizedIncidents.add(temp);
         }
